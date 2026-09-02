@@ -64,3 +64,5 @@
 - The skills confirm the Wallet API as the real-mode route. The hosted product will not hold viewing keys or use the low-level Privacy SDK as its normal user path.
 - The lightweight pnpm workspace, Webpack-based Next.js shell, framework-neutral Lab Core package, separate example consumer, compatibility manifest, and CI are established.
 - Local gates pass: frozen install, lint, typecheck, two initial tests, formatting, and production build. Dependencies occupy about 501 MB; the first compiled development request used about 1.0 GB RSS across the project processes, which fits the 8 GB laptop constraint without Docker.
+- The team's only registration PR was opened as `starkience/strk20-hackathon#270` with Telegram usernames `IamAlikeX` and `agbacoder01` and category `Infra`.
+- Upstream automation validated and applied the registration to `main` as commit `fca520f`, then closed the PR by design to avoid concurrent registry conflicts. Registration is complete; no second registry PR should be opened.

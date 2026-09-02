@@ -35,8 +35,8 @@ The plan is ordered around risk rather than appearance:
 
 ## Checklist
 
-- [ ] **1. Choose the product identity and create the single registration entry**
-      Progress: **STRK20 Workbench** is selected; `Alike001/strk20-workbench` is public with its first commit. The registry edit and PR are waiting only for both builders' exact Telegram usernames.
+- [x] **1. Choose the product identity and create the single registration entry**
+      Completed: 2026-09-02. **STRK20 Workbench** is public at `Alike001/strk20-workbench`; the single team entry includes `IamAlikeX` and `agbacoder01` under `Infra`. Registration PR #270 passed automation and was applied to upstream `main` as commit `fca520f`.
       Spec ref: `technical-specification.md > 26. Build Milestones > Milestone A` and `project-scope.md > Decisions Still Needed Before Registration`
       What to build: Select an original product and repository name after a collision/meaning check; confirm the GitHub owner and both Telegram usernames; create the public project repository; add a first README, MIT licence, `.gitignore`, empty valid `strk20.json`, and the planning references intended to be public; make the first commit; then fork `starkience/strk20-hackathon`, append exactly one registry object containing the project repository and both Telegram usernames, change no other entry, and open the team's only registration pull request with the approved one-sentence product description. Do not fork CDR Kit or ZK Freighter as the project base.
       Acceptance: The project repository is public and non-empty; `strk20.json` contains the four required fields; the licence is explicit; one registry PR represents the entire team; no unrelated registry entry changed; the product description identifies reusable STRK20 infrastructure rather than a generic simulator.
