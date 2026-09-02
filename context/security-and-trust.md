@@ -17,16 +17,16 @@ This document records the security properties and caveats stated by the public s
 
 The contract and audit identify the following authority surfaces:
 
-| Role/capability | Publicly described power |
-|---|---|
-| Governance admin | Manages roles and contract upgrades. |
-| Security governor | Controls auditor and screener public keys. |
-| App governor | Controls fees, collector, proof-validity window, and open-note screening policy. |
-| Auditor | Can decrypt registered viewing-key material and withdrawal-related data; cannot spend funds solely through that capability. |
-| Proving service | Executes client actions offchain and returns proofs; can affect availability and observe proving requests. |
-| Discovery operator | Receives discovery requests and request keys unless protected by the intended metadata-separation design. |
-| Paymaster/relayer | Submits transactions and can observe submission-level metadata. |
-| Screening operator | Screens selected deposit/interaction addresses and can reject or fail requests. |
+| Role/capability    | Publicly described power                                                                                                    |
+| ------------------ | --------------------------------------------------------------------------------------------------------------------------- |
+| Governance admin   | Manages roles and contract upgrades.                                                                                        |
+| Security governor  | Controls auditor and screener public keys.                                                                                  |
+| App governor       | Controls fees, collector, proof-validity window, and open-note screening policy.                                            |
+| Auditor            | Can decrypt registered viewing-key material and withdrawal-related data; cannot spend funds solely through that capability. |
+| Proving service    | Executes client actions offchain and returns proofs; can affect availability and observe proving requests.                  |
+| Discovery operator | Receives discovery requests and request keys unless protected by the intended metadata-separation design.                   |
+| Paymaster/relayer  | Submits transactions and can observe submission-level metadata.                                                             |
+| Screening operator | Screens selected deposit/interaction addresses and can reject or fail requests.                                             |
 
 The OpenZeppelin audit states governance could upgrade or change parameters without an onchain delay at the audited snapshot.
 
@@ -70,14 +70,14 @@ packages/privacy/src/
 └── utils.cairo
 ```
 
-| Severity | Found | Marked resolved in report |
-|---|---:|---:|
-| Critical | 0 | 0 |
-| High | 0 | 0 |
-| Medium | 2 | 2 |
-| Low | 5 | 1 |
-| Informational | 4 | 3 |
-| Total | 11 | 6 |
+| Severity      | Found | Marked resolved in report |
+| ------------- | ----: | ------------------------: |
+| Critical      |     0 |                         0 |
+| High          |     0 |                         0 |
+| Medium        |     2 |                         2 |
+| Low           |     5 |                         1 |
+| Informational |     4 |                         3 |
+| Total         |    11 |                         6 |
 
 ### Findings marked resolved
 
@@ -154,4 +154,3 @@ Consequently, “unlinkable” claims depend on correct use of fresh destination
 6. Has the currently deployed version received an audit covering the full onchain and offchain system?
 7. What are the actual anonymity-set and amount-correlation characteristics of current usage?
 8. Is there a documented recovery path for unavailable provers, discovery services, auditor-key events, or paused/upgraded contracts?
-

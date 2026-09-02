@@ -90,12 +90,12 @@ Another developer must be able to use it without changing our source code or rep
 
 ## Execution Modes
 
-| Mode | Runs where | Purpose | Proof status |
-|---|---|---|---|
-| Hosted sandbox | Browser plus lightweight hosted application | Immediate learning and scenario testing | Explicitly simulated |
-| Local workbench | Node process and browser on the developer's machine | Project integration and automated tests | Explicitly simulated by default |
-| Real network | Browser wallet plus remote STRK20 services | Genuine testnet/mainnet activity | Genuine |
-| Full self-hosting | Powerful external machine or future advanced setup | Infrastructure operators | Genuine when correctly configured |
+| Mode              | Runs where                                          | Purpose                                 | Proof status                      |
+| ----------------- | --------------------------------------------------- | --------------------------------------- | --------------------------------- |
+| Hosted sandbox    | Browser plus lightweight hosted application         | Immediate learning and scenario testing | Explicitly simulated              |
+| Local workbench   | Node process and browser on the developer's machine | Project integration and automated tests | Explicitly simulated by default   |
+| Real network      | Browser wallet plus remote STRK20 services          | Genuine testnet/mainnet activity        | Genuine                           |
+| Full self-hosting | Powerful external machine or future advanced setup  | Infrastructure operators                | Genuine when correctly configured |
 
 Docker and a locally hosted production prover are not requirements for the first release. Heavy work is delegated to remote services, CI, or a supported privacy wallet.
 
@@ -177,25 +177,25 @@ The likely frontend stack is Next.js, TypeScript, and Tailwind CSS, running dire
 
 ## How CDR Kit Influences the Product
 
-| CDR Kit principle | Our STRK20 implementation |
-|---|---|
-| Difficult protocol becomes one developer experience | Pool, wallet, discovery, proof, and network state use one mental model |
-| One core supports multiple surfaces | Lab Core supports the hosted workbench, local command, tests, and example |
-| Mock mode reduces adoption friction | Hosted and local sandbox modes require no funds or heavy prover |
-| Documentation is part of the product | Explanations and copyable integration code appear beside scenario state |
-| Technical evidence builds trust | Mainnet transactions, versions, modes, and service health remain visible |
+| CDR Kit principle                                   | Our STRK20 implementation                                                 |
+| --------------------------------------------------- | ------------------------------------------------------------------------- |
+| Difficult protocol becomes one developer experience | Pool, wallet, discovery, proof, and network state use one mental model    |
+| One core supports multiple surfaces                 | Lab Core supports the hosted workbench, local command, tests, and example |
+| Mock mode reduces adoption friction                 | Hosted and local sandbox modes require no funds or heavy prover           |
+| Documentation is part of the product                | Explanations and copyable integration code appear beside scenario state   |
+| Technical evidence builds trust                     | Mainnet transactions, versions, modes, and service health remain visible  |
 
 We may reuse small generic portions of MIT-licensed CDR Kit code only if they provide clear value, and only while preserving its licence notice. Its Story-specific product architecture, copy, brand, illustrations, and screen composition will not be copied wholesale.
 
 ## How ZK Freighter Influences the Product
 
-| ZK Freighter principle | Our STRK20 implementation |
-|---|---|
-| Shared privacy core, thin product surfaces | STRK20 logic stays in Lab Core; the workbench presents it |
-| Be explicit about privacy boundaries | Every scenario states what is public, private, or merely unlinkable |
-| Supporting services stay narrow | The hosted frontend coordinates services but does not become a key custodian |
-| Network choice is configuration | The scenario remains stable while its adapter changes |
-| Claims have verifiable evidence | Real mode displays transaction hashes and explorer links |
+| ZK Freighter principle                     | Our STRK20 implementation                                                    |
+| ------------------------------------------ | ---------------------------------------------------------------------------- |
+| Shared privacy core, thin product surfaces | STRK20 logic stays in Lab Core; the workbench presents it                    |
+| Be explicit about privacy boundaries       | Every scenario states what is public, private, or merely unlinkable          |
+| Supporting services stay narrow            | The hosted frontend coordinates services but does not become a key custodian |
+| Network choice is configuration            | The scenario remains stable while its adapter changes                        |
+| Claims have verifiable evidence            | Real mode displays transaction hashes and explorer links                     |
 
 ZK Freighter is an architectural and UX reference only. Its code and assets will not be copied without an explicit licence.
 

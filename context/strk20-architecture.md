@@ -33,38 +33,38 @@ Separately, the discovery service reads encrypted pool storage through Starknet 
 
 ## Repository layout
 
-| Path | Language | Responsibility |
-|---|---|---|
-| `packages/privacy/` | Cairo | Privacy-pool account contract and protocol source of truth. |
-| `packages/ekubo_swap_anonymizer/` | Cairo | Single-hop Ekubo swap adapter. |
-| `packages/vesu_lending_anonymizer/` | Cairo | Vesu vault/lending adapter. |
-| `packages/shadow_account_anonymizer/` | Cairo | Private sub-account interaction adapter. |
-| `sdk/` | TypeScript | Main wallet/integration SDK and transaction builder. |
-| `client/` | TypeScript | Additional client package built on the SDK. |
-| `crates/discovery-core/` | Rust | Slot computation, traversal, cryptography, and test backend. |
-| `crates/discovery-service/` | Rust | HTTP service for note/channel discovery. |
-| `proof-interceptor/` | TypeScript | Prover-side transaction screening sidecar. |
-| `elliptic-proxy/` | TypeScript | HMAC-authenticated adapter to the Elliptic AML API. |
-| `demo/` | React/TypeScript | Developer-facing pool explorer. |
-| `e2e/` | TypeScript/Cairo | Devnet and integration scenarios. |
-| `lean/` | Lean | Formal-verification work. |
-| `docs/audit/` | PDF/Markdown | Published audit material. |
+| Path                                  | Language         | Responsibility                                               |
+| ------------------------------------- | ---------------- | ------------------------------------------------------------ |
+| `packages/privacy/`                   | Cairo            | Privacy-pool account contract and protocol source of truth.  |
+| `packages/ekubo_swap_anonymizer/`     | Cairo            | Single-hop Ekubo swap adapter.                               |
+| `packages/vesu_lending_anonymizer/`   | Cairo            | Vesu vault/lending adapter.                                  |
+| `packages/shadow_account_anonymizer/` | Cairo            | Private sub-account interaction adapter.                     |
+| `sdk/`                                | TypeScript       | Main wallet/integration SDK and transaction builder.         |
+| `client/`                             | TypeScript       | Additional client package built on the SDK.                  |
+| `crates/discovery-core/`              | Rust             | Slot computation, traversal, cryptography, and test backend. |
+| `crates/discovery-service/`           | Rust             | HTTP service for note/channel discovery.                     |
+| `proof-interceptor/`                  | TypeScript       | Prover-side transaction screening sidecar.                   |
+| `elliptic-proxy/`                     | TypeScript       | HMAC-authenticated adapter to the Elliptic AML API.          |
+| `demo/`                               | React/TypeScript | Developer-facing pool explorer.                              |
+| `e2e/`                                | TypeScript/Cairo | Devnet and integration scenarios.                            |
+| `lean/`                               | Lean             | Formal-verification work.                                    |
+| `docs/audit/`                         | PDF/Markdown     | Published audit material.                                    |
 
 ## Onchain action model
 
 The contract compiles client actions into server actions. Client actions must be ordered by phase:
 
-| Phase | Action | Meaning |
-|---:|---|---|
-| 0 | `SetViewingKey` | First-time registration; immutable after the write-once storage entry is created. |
-| 1 | `OpenChannel` | Create a sender-to-recipient channel. |
-| 2 | `OpenSubchannel` | Create a token-specific lane inside that channel. |
-| 3 | `Deposit` | Bring public ERC-20 value into the pool accounting. |
-| 4 | `UseNote` | Spend an existing note and create its nullifier. |
-| 5 | `CreateEncNote` | Create a private encrypted note. |
-| 5 | `CreateOpenNote` | Create an unencrypted placeholder whose amount will be filled later. |
-| 6 | `Withdraw` | Send token value out of the pool. |
-| 7 | `InvokeExternal` | Call one external integration contract. |
+| Phase | Action           | Meaning                                                                           |
+| ----: | ---------------- | --------------------------------------------------------------------------------- |
+|     0 | `SetViewingKey`  | First-time registration; immutable after the write-once storage entry is created. |
+|     1 | `OpenChannel`    | Create a sender-to-recipient channel.                                             |
+|     2 | `OpenSubchannel` | Create a token-specific lane inside that channel.                                 |
+|     3 | `Deposit`        | Bring public ERC-20 value into the pool accounting.                               |
+|     4 | `UseNote`        | Spend an existing note and create its nullifier.                                  |
+|     5 | `CreateEncNote`  | Create a private encrypted note.                                                  |
+|     5 | `CreateOpenNote` | Create an unencrypted placeholder whose amount will be filled later.              |
+|     6 | `Withdraw`       | Send token value out of the pool.                                                 |
+|     7 | `InvokeExternal` | Call one external integration contract.                                           |
 
 Atomic token-balance conservation is checked across the compiled action set before actions are applied.
 
@@ -149,17 +149,16 @@ The proof-interceptor README documents configuration-sensitive bypass and fail-o
 
 ## Version snapshot
 
-| Component | Documented compatible revision |
-|---|---|
-| SDK | `PRIVACY-0.14.3-RC.6` |
-| Proof interceptor | `PRIVACY-0.14.3-RC.6` image/tag family |
-| Transaction prover | `PRIVACY-0.14.3-RC.2` image |
-| Discovery service | `PRIVACY-0.14.3-RC.2` image |
-| Pathfinder | `v0.22.7` |
-| SDK package version | `0.14.3-rc.6` |
-| Starknet.js in SDK | `10.5.0` |
-| Cairo workspace dependency | `2.17.0` |
-| OpenZeppelin Cairo dependency | `3.0.0` |
+| Component                     | Documented compatible revision         |
+| ----------------------------- | -------------------------------------- |
+| SDK                           | `PRIVACY-0.14.3-RC.6`                  |
+| Proof interceptor             | `PRIVACY-0.14.3-RC.6` image/tag family |
+| Transaction prover            | `PRIVACY-0.14.3-RC.2` image            |
+| Discovery service             | `PRIVACY-0.14.3-RC.2` image            |
+| Pathfinder                    | `v0.22.7`                              |
+| SDK package version           | `0.14.3-rc.6`                          |
+| Starknet.js in SDK            | `10.5.0`                               |
+| Cairo workspace dependency    | `2.17.0`                               |
+| OpenZeppelin Cairo dependency | `3.0.0`                                |
 
 Use the compatibility row from the repository release being deployed. Do not assume all current default branches are mutually compatible.
-

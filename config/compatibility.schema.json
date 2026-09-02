@@ -1,0 +1,53 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "STRK20 Workbench compatibility manifest",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "status",
+    "checked_at",
+    "runtime",
+    "frontend",
+    "strk20",
+    "warnings"
+  ],
+  "properties": {
+    "status": { "enum": ["candidate", "verified", "blocked"] },
+    "checked_at": { "type": "string", "format": "date" },
+    "runtime": {
+      "type": "object",
+      "required": ["node", "pnpm"],
+      "properties": {
+        "node": { "type": "string" },
+        "pnpm": { "type": "string" }
+      }
+    },
+    "frontend": {
+      "type": "object",
+      "required": ["next", "react", "bundler"],
+      "properties": {
+        "next": { "type": "string" },
+        "react": { "type": "string" },
+        "bundler": { "enum": ["webpack", "turbopack"] }
+      }
+    },
+    "strk20": {
+      "type": "object",
+      "required": [
+        "route",
+        "minimum_wallet_api",
+        "supported_wallet",
+        "network",
+        "pool_address"
+      ],
+      "properties": {
+        "route": { "enum": ["wallet-api", "privacy-sdk"] },
+        "minimum_wallet_api": { "type": "string" },
+        "supported_wallet": { "type": ["string", "null"] },
+        "network": { "type": "string" },
+        "pool_address": { "type": "string", "pattern": "^0x[0-9a-fA-F]+$" }
+      }
+    },
+    "warnings": { "type": "array", "items": { "type": "string" } }
+  }
+}

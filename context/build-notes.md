@@ -59,3 +59,8 @@
 - The name was selected for immediate judge comprehension and checked against the current sprint registry, npm, GitHub repository search, and general web results; no exact software-project collision was found at selection time.
 - Names centered on “Veil” were avoided because that word is already heavily represented among sprint projects.
 - The initial local repository surface contains an honest product README, MIT licence, secret-safe `.gitignore`, and empty valid `strk20.json`.
+- The public project repository is `https://github.com/Alike001/strk20-workbench`; the team's single registry PR is intentionally paused until both exact Telegram usernames are available.
+- The four sprint skills were installed project-locally and audited before use. Their only executable is a read-only network freshness checker; its 2026-09-02 quick run found no checked drift and one terminology warning.
+- The skills confirm the Wallet API as the real-mode route. The hosted product will not hold viewing keys or use the low-level Privacy SDK as its normal user path.
+- The lightweight pnpm workspace, Webpack-based Next.js shell, framework-neutral Lab Core package, separate example consumer, compatibility manifest, and CI are established.
+- Local gates pass: frozen install, lint, typecheck, two initial tests, formatting, and production build. Dependencies occupy about 501 MB; the first compiled development request used about 1.0 GB RSS across the project processes, which fits the 8 GB laptop constraint without Docker.

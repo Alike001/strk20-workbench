@@ -119,13 +119,13 @@ No license is declared by GitHub for the ZK Freighter repository and no root lic
 
 The obvious infrastructure prompts are already unevenly occupied:
 
-| Prompt | Current overlap | Observed maturity |
-|---|---|---|
-| IDEA-21 selective disclosure | STRK20 ZK Receipts, strk-disclose, Ledger Glass, and payment projects with scoped disclosure | Multiple implementations; Ledger Glass has a concrete scoped-key design, while two others had no mainnet evidence in their manifests at the inspected commits |
-| IDEA-23 open note indexer | `kfastov/strk20-indexer` | Very deep Rust implementation: keyless sync, epoch bundles, storage-proof verification, tests, and one recorded pool transaction |
-| IDEA-24 local development environment | No registry entry clearly claims this prompt | Upstream has devnet/test pieces, but no single packaged developer environment was found |
-| IDEA-25 privacy simulator | VeilCheck, Preflight, VeilGuard, and parts of Lacuna | Crowded; Lacuna already had six verified mainnet pool interactions, a public demo, and a video |
-| IDEA-26 component/SDK kit | Tx404, PrivKit, Stealth Checkout, and starter-kit derivatives | Tx404 already exposes core and React packages; PrivKit was still pre-code in the inspected commit |
+| Prompt                                | Current overlap                                                                              | Observed maturity                                                                                                                                             |
+| ------------------------------------- | -------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| IDEA-21 selective disclosure          | STRK20 ZK Receipts, strk-disclose, Ledger Glass, and payment projects with scoped disclosure | Multiple implementations; Ledger Glass has a concrete scoped-key design, while two others had no mainnet evidence in their manifests at the inspected commits |
+| IDEA-23 open note indexer             | `kfastov/strk20-indexer`                                                                     | Very deep Rust implementation: keyless sync, epoch bundles, storage-proof verification, tests, and one recorded pool transaction                              |
+| IDEA-24 local development environment | No registry entry clearly claims this prompt                                                 | Upstream has devnet/test pieces, but no single packaged developer environment was found                                                                       |
+| IDEA-25 privacy simulator             | VeilCheck, Preflight, VeilGuard, and parts of Lacuna                                         | Crowded; Lacuna already had six verified mainnet pool interactions, a public demo, and a video                                                                |
+| IDEA-26 component/SDK kit             | Tx404, PrivKit, Stealth Checkout, and starter-kit derivatives                                | Tx404 already exposes core and React packages; PrivKit was still pre-code in the inspected commit                                                             |
 
 This makes IDEA-23 and IDEA-25 poor starting points for a late entrant unless the approach is materially different. A general “STRK20 SDK” would also be compared directly with Tx404 and the upstream SDK.
 
@@ -180,12 +180,12 @@ This combines CDR Kit's developer-product shape with ZK Freighter's shared core,
 
 ### Why this can fit the four judging criteria
 
-| Criterion | What the project would need to demonstrate |
-|---|---|
-| Integration depth, 30% | Real pool contract, official SDK/testing primitives, discovery, proving path, Wallet API, and at least one anonymizer scenario rather than a superficial wrapper |
-| Mainnet product, 30% | A hosted inspector/reference app that a real user can open and use on mainnet, plus three verified pool transactions; a local CLI alone is insufficient |
-| Innovation, 25% | Reproducible one-command orchestration, scenario fixtures, failure injection, compatibility pinning, and evidence export that upstream does not currently package |
-| Documentation/open source, 15% | Installable CLI/package, clear license, architecture, privacy boundaries, version matrix, examples, tests, and a five-minute quickstart |
+| Criterion                      | What the project would need to demonstrate                                                                                                                        |
+| ------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Integration depth, 30%         | Real pool contract, official SDK/testing primitives, discovery, proving path, Wallet API, and at least one anonymizer scenario rather than a superficial wrapper  |
+| Mainnet product, 30%           | A hosted inspector/reference app that a real user can open and use on mainnet, plus three verified pool transactions; a local CLI alone is insufficient           |
+| Innovation, 25%                | Reproducible one-command orchestration, scenario fixtures, failure injection, compatibility pinning, and evidence export that upstream does not currently package |
+| Documentation/open source, 15% | Installable CLI/package, clear license, architecture, privacy boundaries, version matrix, examples, tests, and a five-minute quickstart                           |
 
 ### Recommended boundary
 

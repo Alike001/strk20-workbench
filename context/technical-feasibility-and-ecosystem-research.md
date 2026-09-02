@@ -36,12 +36,12 @@ The inspected upstream STRK20 snapshot was [`starkware-libs/starknet-privacy`](h
 
 ### What passed locally
 
-| Surface | Command-level result | What it establishes |
-|---|---|---|
-| Privacy SDK | Build passed; 263 fast tests across 27 files passed | Registration, channels, deposits, private transfer, withdrawal, discovery, screening, shadow accounts, external invoke, open notes, and failure handling are testable primitives |
-| Client | Build, lint, formatting, typecheck, and 66 tests across 11 files passed | The user-facing integration layer compiles against the current upstream interfaces |
-| Published wallet types | Inspected from `starknet@10.5.0` and `@starknet-io/starknet-types-0103` | The STRK20 wallet actions and response types exist in released code |
-| E2E implementation | Source and CI inspected | Upstream already starts a real patched devnet, deploys the real pool, and starts the real discovery service for E2E tests |
+| Surface                | Command-level result                                                    | What it establishes                                                                                                                                                              |
+| ---------------------- | ----------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Privacy SDK            | Build passed; 263 fast tests across 27 files passed                     | Registration, channels, deposits, private transfer, withdrawal, discovery, screening, shadow accounts, external invoke, open notes, and failure handling are testable primitives |
+| Client                 | Build, lint, formatting, typecheck, and 66 tests across 11 files passed | The user-facing integration layer compiles against the current upstream interfaces                                                                                               |
+| Published wallet types | Inspected from `starknet@10.5.0` and `@starknet-io/starknet-types-0103` | The STRK20 wallet actions and response types exist in released code                                                                                                              |
+| E2E implementation     | Source and CI inspected                                                 | Upstream already starts a real patched devnet, deploys the real pool, and starts the real discovery service for E2E tests                                                        |
 
 The SDK test run reported approximately 78.2% line coverage. Dependency audits at this snapshot reported 15 SDK findings and four high-severity client findings. Those audit counts are observations from one dependency-lock snapshot, not a security assessment of the STRK20 protocol.
 
@@ -152,12 +152,12 @@ Upstream examples cover Ekubo and Vesu flows, plus shadow-account/derived-identi
 
 ## The Four Honest Environment Profiles
 
-| Profile | Runs | Proof semantics | Intended use |
-|---|---|---|---|
-| `memory` | SDK test doubles and deterministic fixtures | Mock | Unit tests, UI states, CI, failure injection |
-| `local` | Patched devnet, real deployed pool, local discovery, seeded accounts/tokens | Explicit mock-proof provider | Contract integration, discovery, reorg and anonymizer tests |
-| `network` | Supported Starknet network, real wallet or SDK, real prover/discovery | Real | Staging and mainnet evidence |
-| `full-prover` | Local stack plus official prover container | Real if hardware/configuration meet requirements | Advanced teams, CI runners, self-hosting validation |
+| Profile       | Runs                                                                        | Proof semantics                                  | Intended use                                                |
+| ------------- | --------------------------------------------------------------------------- | ------------------------------------------------ | ----------------------------------------------------------- |
+| `memory`      | SDK test doubles and deterministic fixtures                                 | Mock                                             | Unit tests, UI states, CI, failure injection                |
+| `local`       | Patched devnet, real deployed pool, local discovery, seeded accounts/tokens | Explicit mock-proof provider                     | Contract integration, discovery, reorg and anonymizer tests |
+| `network`     | Supported Starknet network, real wallet or SDK, real prover/discovery       | Real                                             | Staging and mainnet evidence                                |
+| `full-prover` | Local stack plus official prover container                                  | Real if hardware/configuration meet requirements | Advanced teams, CI runners, self-hosting validation         |
 
 Every log, badge, exported receipt, and UI state should identify the active profile. The product's most important trust feature is refusing to let developers confuse a simulated proof with a real one.
 
@@ -283,12 +283,12 @@ The current working descriptor is **STRK20 Developer Lab**. It is deliberately n
 
 ## Fit Against the Sprint Rubric
 
-| Criterion | Credible evidence path |
-|---|---|
+| Criterion                     | Credible evidence path                                                                                                                                            |
+| ----------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | STRK20 integration depth, 30% | Real pool deployment locally; actual discovery service; provider-compatible proving; published Wallet API behaviour; one real anonymizer; mainnet wallet/SDK flow |
-| Working mainnet product, 30% | Public reference app, three successful live-pool transactions, real proof mode, explorer links, no login wall |
-| Innovation, 25% | One-command privacy stack, capability/version preflight, profile parity, failure injection, privacy-boundary inspector, evidence export |
-| Docs/open source, 15% | Permissive licence, five-minute quickstart, architecture and trust model, compatibility matrix, examples, CI, reproducible releases |
+| Working mainnet product, 30%  | Public reference app, three successful live-pool transactions, real proof mode, explorer links, no login wall                                                     |
+| Innovation, 25%               | One-command privacy stack, capability/version preflight, profile parity, failure injection, privacy-boundary inspector, evidence export                           |
+| Docs/open source, 15%         | Permissive licence, five-minute quickstart, architecture and trust model, compatibility matrix, examples, CI, reproducible releases                               |
 
 Infrastructure can meet and potentially win under the rubric. Its advantage is reusable ecosystem value; its risk is appearing like internal tooling rather than a product. The reference app and mainnet handoff solve that risk.
 

@@ -53,49 +53,49 @@ The sandbox behaves like a small state machine, not a video. Supported input cha
 
 ### 3.1 Runtime and workspace
 
-| Concern | Choice | Reason |
-|---|---|---|
-| Runtime | Node.js 24.x | Matches the upstream STRK20 development baseline while remaining suitable for Next.js 16 |
-| Package manager | pnpm 10.x workspaces | Fast installs, strict dependency boundaries, no need for Turborepo at this scale |
-| Language | TypeScript 5.9.x, strict mode | Shared types across core, web, and example |
-| Module format | ESM | Matches modern Next.js, Starknet.js, and upstream package direction |
+| Concern         | Choice                        | Reason                                                                                   |
+| --------------- | ----------------------------- | ---------------------------------------------------------------------------------------- |
+| Runtime         | Node.js 24.x                  | Matches the upstream STRK20 development baseline while remaining suitable for Next.js 16 |
+| Package manager | pnpm 10.x workspaces          | Fast installs, strict dependency boundaries, no need for Turborepo at this scale         |
+| Language        | TypeScript 5.9.x, strict mode | Shared types across core, web, and example                                               |
+| Module format   | ESM                           | Matches modern Next.js, Starknet.js, and upstream package direction                      |
 
 All committed dependencies use an exact lockfile. Critical Starknet-facing dependencies are exact-pinned rather than ranged.
 
 ### 3.2 Frontend
 
-| Dependency | Starting pin/policy | Purpose |
-|---|---|---|
-| Next.js | 16.2.9 candidate; verify against starter before final lock | Hosted workbench, documentation routes, safe server routes |
-| React / React DOM | compatible exact React 19 release selected by the lockfile | Interactive product surface |
-| Tailwind CSS | exact current release selected at scaffold time | Design tokens and responsive layout |
-| Zustand | 5.0.12 candidate | Lightweight workbench state and versioned sandbox persistence |
-| Zod | exact current stable release | Runtime validation of persisted data, configuration, and server inputs |
+| Dependency        | Starting pin/policy                                        | Purpose                                                                |
+| ----------------- | ---------------------------------------------------------- | ---------------------------------------------------------------------- |
+| Next.js           | 16.2.9 candidate; verify against starter before final lock | Hosted workbench, documentation routes, safe server routes             |
+| React / React DOM | compatible exact React 19 release selected by the lockfile | Interactive product surface                                            |
+| Tailwind CSS      | exact current release selected at scaffold time            | Design tokens and responsive layout                                    |
+| Zustand           | 5.0.12 candidate                                           | Lightweight workbench state and versioned sandbox persistence          |
+| Zod               | exact current stable release                               | Runtime validation of persisted data, configuration, and server inputs |
 
 The STRK20 starter currently uses Next.js 16.0.8, React 19.2.1, and Webpack scripts. The implementation begins with a compatibility spike: if Starknet wallet packages do not bundle correctly with the current Next.js/Turbopack combination, the project will use `next dev --webpack` and `next build --webpack`, matching the starter kit rather than spending time on bundler debugging.
 
 ### 3.3 Starknet and STRK20
 
-| Dependency/API | Candidate pin | Purpose |
-|---|---|---|
-| `starknet` | `10.5.0` | Upstream-inspected STRK20 wallet types and transaction/RPC utilities |
-| `@starknet-io/get-starknet-discovery` | `6.0.2` | Browser wallet discovery |
-| `@starknet-io/get-starknet-wallet-standard` | `6.0.2` | Standard wallet feature access |
-| `@starknet-io/types-js` | `0.10.3` | Wallet/API type alignment |
-| STRK20 Wallet API | capability detected at runtime | Balances, prepare/invoke, and proof execution |
-| STRK20 pool | mainnet address from official sprint metadata | Evidence and transaction target validation |
+| Dependency/API                              | Candidate pin                                 | Purpose                                                              |
+| ------------------------------------------- | --------------------------------------------- | -------------------------------------------------------------------- |
+| `starknet`                                  | `10.5.0`                                      | Upstream-inspected STRK20 wallet types and transaction/RPC utilities |
+| `@starknet-io/get-starknet-discovery`       | `6.0.2`                                       | Browser wallet discovery                                             |
+| `@starknet-io/get-starknet-wallet-standard` | `6.0.2`                                       | Standard wallet feature access                                       |
+| `@starknet-io/types-js`                     | `0.10.3`                                      | Wallet/API type alignment                                            |
+| STRK20 Wallet API                           | capability detected at runtime                | Balances, prepare/invoke, and proof execution                        |
+| STRK20 pool                                 | mainnet address from official sprint metadata | Evidence and transaction target validation                           |
 
 The final compatibility set is written to a version manifest only after a real supported wallet smoke test passes. The application must fail closed with an actionable compatibility message if a wallet exposes only ordinary Starknet methods and not STRK20 actions.
 
 ### 3.4 Testing and quality
 
-| Dependency | Candidate pin/policy | Purpose |
-|---|---|---|
-| Vitest | 4.1.6 candidate | Core unit, contract, store, and component tests |
-| Testing Library | exact current stable releases | User-visible component behaviour |
-| Playwright | exact current stable release | Two critical hosted journeys in Chromium |
-| ESLint | exact current release compatible with Next.js | Static checks |
-| Prettier | exact current stable release | Consistent formatting |
+| Dependency      | Candidate pin/policy                          | Purpose                                         |
+| --------------- | --------------------------------------------- | ----------------------------------------------- |
+| Vitest          | 4.1.6 candidate                               | Core unit, contract, store, and component tests |
+| Testing Library | exact current stable releases                 | User-visible component behaviour                |
+| Playwright      | exact current stable release                  | Two critical hosted journeys in Chromium        |
+| ESLint          | exact current release compatible with Next.js | Static checks                                   |
+| Prettier        | exact current stable release                  | Consistent formatting                           |
 
 Vitest uses `test.projects`, not the deprecated workspace configuration. Node tests cover `lab-core`; browser or jsdom tests cover persistence and UI behaviour.
 
@@ -243,8 +243,20 @@ type ProofKind = "simulated" | "real" | "unknown";
 type LabAction =
   | { type: "register"; actorId: ActorId }
   | { type: "shield"; actorId: ActorId; token: TokenRef; amount: bigint }
-  | { type: "private-transfer"; from: ActorId; to: ActorId; token: TokenRef; amount: bigint }
-  | { type: "withdraw"; actorId: ActorId; recipient: string; token: TokenRef; amount: bigint };
+  | {
+      type: "private-transfer";
+      from: ActorId;
+      to: ActorId;
+      token: TokenRef;
+      amount: bigint;
+    }
+  | {
+      type: "withdraw";
+      actorId: ActorId;
+      recipient: string;
+      token: TokenRef;
+      amount: bigint;
+    };
 ```
 
 The first anonymizer extension adds a fifth action only after the initial action union and adapter contract are stable.
@@ -295,13 +307,13 @@ interface ScenarioState {
 
 The default scenario uses a clearly fictional token and deterministic state:
 
-| Stage | Alice public | Alice private | Bob public | Bob private |
-|---|---:|---:|---:|---:|
-| Initial | 100 | 0 | 0 | 0 |
-| After register | 100 | 0 | 0 | 0 |
-| Alice shields 50 | 50 | 50 | 0 | 0 |
-| Alice transfers 20 privately | 50 | 30 | 0 | 20 |
-| Bob withdraws 10 | 50 | 30 | 10 | 10 |
+| Stage                        | Alice public | Alice private | Bob public | Bob private |
+| ---------------------------- | -----------: | ------------: | ---------: | ----------: |
+| Initial                      |          100 |             0 |          0 |           0 |
+| After register               |          100 |             0 |          0 |           0 |
+| Alice shields 50             |           50 |            50 |          0 |           0 |
+| Alice transfers 20 privately |           50 |            30 |          0 |          20 |
+| Bob withdraws 10             |           50 |            30 |         10 |          10 |
 
 Network fees are excluded from sandbox balances and the interface states that explicitly.
 

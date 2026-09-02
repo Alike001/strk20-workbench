@@ -1,0 +1,31 @@
+{
+  "name": "strk20-workbench",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "packageManager": "pnpm@10.33.1",
+  "engines": {
+    "node": ">=24 <25",
+    "pnpm": ">=10 <11"
+  },
+  "scripts": {
+    "dev": "pnpm --filter @strk20-workbench/web dev",
+    "build": "pnpm -r --if-present build",
+    "lint": "eslint . --max-warnings=0",
+    "typecheck": "pnpm --filter @strk20-workbench/lab-core build && pnpm -r --if-present typecheck",
+    "test": "vitest run",
+    "format": "prettier --write .",
+    "format:check": "prettier --check ."
+  },
+  "devDependencies": {
+    "@types/node": "24.13.3",
+    "@types/react": "19.2.18",
+    "@types/react-dom": "19.2.5",
+    "eslint": "9.39.1",
+    "eslint-config-next": "16.2.9",
+    "eslint-config-prettier": "10.1.8",
+    "prettier": "3.9.6",
+    "typescript": "5.9.3",
+    "vitest": "4.1.11"
+  }
+}
