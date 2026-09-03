@@ -24,6 +24,12 @@ The first release is planned as a lightweight pnpm workspace containing:
 
 No sandbox result will be represented as a genuine zero-knowledge proof or mainnet transaction.
 
+## Documentation & Contributing
+
+- [`CONTRIBUTING.md`](./CONTRIBUTING.md) — Contribution workflow, pull request guidelines, and safety boundaries.
+- [`docs/development.md`](./docs/development.md) — Node.js 24 and pnpm 10 environment setup, workspace structure, and development commands.
+- [`docs/compatibility.md`](./docs/compatibility.md) — Runtime and wallet compatibility matrix.
+
 ## Hackathon metadata
 
 Sprint metadata is tracked in [`strk20.json`](./strk20.json). Transaction hashes, deployed contracts, the public demo, and the demo video will only be added when they exist and have been verified.
