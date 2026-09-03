@@ -68,14 +68,14 @@ Follow this step-by-step workflow for all contributions:
 4. **Synchronize upstream main** before starting:
    ```bash
    git fetch upstream
-   git checkout main
-   git pull origin main
-   git merge upstream/main
+   git switch main
+   git merge --ff-only upstream/main
+   git push origin main
    ```
 5. **Create a task branch** from fresh `main`:
    ```bash
-   git checkout -b <type>/<descriptive-name>
-   # e.g., git checkout -b docs/contributor-development-guide
+   git switch -c <type>/<descriptive-name>
+   # e.g., git switch -c docs/contributor-development-guide
    ```
 6. **Make focused changes:**
    - Keep changes tightly scoped to the assigned issue or feature.

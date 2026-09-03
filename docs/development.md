@@ -35,18 +35,17 @@ node -v # Should display v24.x.x
 
 ### 2. Install pnpm 10
 
-Enable `pnpm` 10 via `corepack` (bundled with Node.js) or install globally:
+Enable `pnpm` via `corepack` (bundled with Node.js 24) or install the pinned version globally. Inside this repository, Corepack reads `packageManager` from the root `package.json` and selects pnpm 10.33.1 automatically:
 
 ```bash
 # Option A: Using corepack (recommended)
 corepack enable
-corepack prepare pnpm@10.33.1 --activate
 
 # Option B: Global npm install
 npm install -g pnpm@10.33.1
 
 # Verify pnpm version
-pnpm -v # Should display 10.x.x
+pnpm -v # Should display 10.33.1 inside this repository
 ```
 
 ### 3. Install Workspace Dependencies
@@ -56,6 +55,14 @@ Install dependencies from the frozen lockfile:
 ```bash
 pnpm install --frozen-lockfile
 ```
+
+Real-network development may also need public runtime configuration. Copy the committed template to the Next.js application directory, then replace placeholders locally:
+
+```bash
+cp .env.example apps/web/.env.local
+```
+
+The sandbox does not require an RPC key. Never commit `.env.local`.
 
 ---
 
@@ -139,5 +146,5 @@ The Workbench includes both an in-browser sandbox and an eventual mainnet wallet
 ### 2. Secret Hygiene
 
 - Do **not** commit `.env` or `.env.local` files containing real RPC API keys or private keys.
-- Copy `.env.example` when configuring local environment variables.
+- Copy `.env.example` to `apps/web/.env.local` when configuring the Next.js application.
 - Never store or accept private keys, viewing keys, or seed phrases.
