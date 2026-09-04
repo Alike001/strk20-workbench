@@ -66,3 +66,12 @@
 - Local gates pass: frozen install, lint, typecheck, two initial tests, formatting, and production build. Dependencies occupy about 501 MB; the first compiled development request used about 1.0 GB RSS across the project processes, which fits the 8 GB laptop constraint without Docker.
 - The team's only registration PR was opened as `starkience/strk20-hackathon#270` with Telegram usernames `IamAlikeX` and `agbacoder01` and category `Infra`.
 - Upstream automation validated and applied the registration to `main` as commit `fca520f`, then closed the PR by design to avoid concurrent registry conflicts. Registration is complete; no second registry PR should be opened.
+
+## 2026-09-04 — Wallet compatibility spike
+
+- Context7 was consulted for Starknet.js, but its indexed examples stopped at the older Wallet API generation; current v6/v10 behaviour was therefore verified from official upstream source and package metadata.
+- The upstream starter matrix (`starknet@10.4.0`, discovery and wallet standard `6.0.2`, types `0.10.3`) completed a clean install and Webpack production build. Replacing only Starknet.js with `10.5.0` also completed the build.
+- The project selected exact candidate pins `10.5.0` / `6.0.2` / `6.0.2` / `0.10.3`. Starknet.js 10.7.1 was not selected because it advances to prerelease Wallet API 0.10.4 types.
+- A hidden compatibility route now discovers only after a user click and connects only after a second explicit wallet choice. It reports safe feature/version data without requesting STRK20 balances, preparing proofs, or submitting transactions.
+- Frozen-compatible install, lint, typecheck, five tests, and the Next.js 16.2.9 Webpack build pass. A wallet-free browser scan also passes; the real Ready/Xverse connection and four Telegram answers remain external gates, so checklist item 3 stays open.
+- Team parallelism was refined: the second builder receives only prop-driven, isolated frontend components with explicit file boundaries while the primary branch owns architecture, wallet dependencies, global styles, and integration.

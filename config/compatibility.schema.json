@@ -8,7 +8,9 @@
     "checked_at",
     "runtime",
     "frontend",
+    "packages",
     "strk20",
+    "verification",
     "warnings"
   ],
   "properties": {
@@ -31,6 +33,22 @@
         "bundler": { "enum": ["webpack", "turbopack"] }
       }
     },
+    "packages": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "starknet",
+        "get_starknet_discovery",
+        "get_starknet_wallet_standard",
+        "types_js"
+      ],
+      "properties": {
+        "starknet": { "type": "string" },
+        "get_starknet_discovery": { "type": "string" },
+        "get_starknet_wallet_standard": { "type": "string" },
+        "types_js": { "type": "string" }
+      }
+    },
     "strk20": {
       "type": "object",
       "required": [
@@ -46,6 +64,16 @@
         "supported_wallet": { "type": ["string", "null"] },
         "network": { "type": "string" },
         "pool_address": { "type": "string", "pattern": "^0x[0-9a-fA-F]+$" }
+      }
+    },
+    "verification": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["starter_matrix", "candidate_matrix", "browser_wallet"],
+      "properties": {
+        "starter_matrix": { "enum": ["passed", "failed", "pending"] },
+        "candidate_matrix": { "enum": ["passed", "failed", "pending"] },
+        "browser_wallet": { "enum": ["passed", "failed", "pending"] }
       }
     },
     "warnings": { "type": "array", "items": { "type": "string" } }

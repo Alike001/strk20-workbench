@@ -1,7 +1,7 @@
 {
   "$schema": "./compatibility.schema.json",
   "status": "candidate",
-  "checked_at": "2026-09-02",
+  "checked_at": "2026-09-04",
   "runtime": {
     "node": "24.x",
     "pnpm": "10.33.1"
@@ -11,6 +11,12 @@
     "react": "19.2.8",
     "bundler": "webpack"
   },
+  "packages": {
+    "starknet": "10.5.0",
+    "get_starknet_discovery": "6.0.2",
+    "get_starknet_wallet_standard": "6.0.2",
+    "types_js": "0.10.3"
+  },
   "strk20": {
     "route": "wallet-api",
     "minimum_wallet_api": "0.10.3",
@@ -18,7 +24,13 @@
     "network": "SN_MAIN",
     "pool_address": "0x040337b1af3c663e86e333bab5a4b28da8d4652a15a69beee2b677776ffe812a"
   },
+  "verification": {
+    "starter_matrix": "passed",
+    "candidate_matrix": "passed",
+    "browser_wallet": "pending"
+  },
   "warnings": [
-    "The supported wallet and final Starknet package pins require the browser compatibility spike."
+    "No wallet is declared supported until a real Ready or Xverse browser session passes the compatibility probe.",
+    "The 0.10.3 API advertisement indicates the STRK20 RPC surface; it does not prove that a transaction will succeed."
   ]
 }

@@ -10,12 +10,16 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
+    "@starknet-io/get-starknet-discovery": "6.0.2",
+    "@starknet-io/get-starknet-wallet-standard": "6.0.2",
     "@strk20-workbench/lab-core": "workspace:*",
     "next": "16.2.9",
     "react": "19.2.8",
-    "react-dom": "19.2.8"
+    "react-dom": "19.2.8",
+    "starknet": "10.5.0"
   },
   "devDependencies": {
+    "@starknet-io/types-js": "0.10.3",
     "@tailwindcss/postcss": "4.3.3",
     "tailwindcss": "4.3.3"
   }
