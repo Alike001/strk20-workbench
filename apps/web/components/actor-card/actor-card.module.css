@@ -15,6 +15,61 @@
   box-shadow: 0 0 0 1px var(--accent);
 }
 
+.compact {
+  gap: 0.6rem;
+  padding: 0.8rem;
+}
+
+.compact .eyebrow,
+.compact .addressLabel {
+  display: none;
+}
+
+.compact .name {
+  color: var(--accent);
+  font-family: var(--font-mono);
+  font-size: 1rem;
+}
+
+.compact .activeLabel {
+  padding: 0.28rem 0.45rem;
+  font-size: 0.58rem;
+}
+
+.compact .addressBlock {
+  margin: 0;
+}
+
+.compact .address {
+  margin-top: 0;
+  font-size: 0.62rem;
+}
+
+.compact .facts {
+  gap: 0.45rem;
+}
+
+.compact .fact {
+  padding: 0.55rem;
+}
+
+.compact .fact dt {
+  font-size: 0.55rem;
+}
+
+.compact .fact dd {
+  margin-top: 0.3rem;
+}
+
+.compact .amount {
+  font-size: 0.82rem;
+}
+
+.compact .symbol,
+.compact .registration {
+  font-size: 0.62rem;
+}
+
 .header {
   display: flex;
   min-width: 0;

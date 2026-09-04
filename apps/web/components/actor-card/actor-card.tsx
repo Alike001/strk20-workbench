@@ -17,6 +17,7 @@ export interface ActorCardProps {
   readonly publicBalance: ActorBalanceView;
   readonly privateBalance: ActorBalanceView;
   readonly active?: boolean;
+  readonly compact?: boolean;
 }
 
 const registrationLabels: Record<ActorRegistrationState, string> = {
@@ -38,10 +39,11 @@ export function ActorCard({
   publicBalance,
   privateBalance,
   active = false,
+  compact = false,
 }: ActorCardProps): JSX.Element {
   return (
     <article
-      className={`${styles.actorCard} ${active ? styles.active : ""}`}
+      className={`${styles.actorCard} ${active ? styles.active : ""} ${compact ? styles.compact : ""}`}
       data-active={active ? "true" : "false"}
     >
       <header className={styles.header}>

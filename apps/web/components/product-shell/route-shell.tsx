@@ -6,15 +6,19 @@ export function RouteShell({
   title,
   description,
   state,
+  compact = false,
   children,
 }: Readonly<{
   title: string;
   description: string;
   state: string;
+  compact?: boolean;
   children: ReactNode;
 }>) {
   return (
-    <main className={styles.routeMain}>
+    <main
+      className={`${styles.routeMain} ${compact ? styles.routeMainCompact : ""}`}
+    >
       <header className={styles.routeHeading}>
         <div>
           <h1>{title}</h1>

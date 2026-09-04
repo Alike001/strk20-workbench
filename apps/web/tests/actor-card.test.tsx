@@ -76,4 +76,14 @@ describe("ActorCard", () => {
     expect(activeHtml).toContain("30");
     expect(activeHtml).toContain("Registered");
   });
+
+  it("supports the compact workbench integration without changing data", () => {
+    const html = renderToStaticMarkup(
+      <ActorCard {...actor} compact registration="registered" />,
+    );
+    expect(html).toContain("Alice");
+    expect(html).toContain("Public balance");
+    expect(html).toContain("Private balance");
+    expect(html).toContain("Registered");
+  });
 });

@@ -142,7 +142,12 @@ export function createWorkbenchStore(
 export async function rehydrateWorkbenchStore(
   store: ReturnType<typeof createWorkbenchStore>,
 ): Promise<void> {
-  await store.persist.rehydrate();
+  try {
+    await store.persist.rehydrate();
+    store.getState().finishHydration();
+  } catch (cause) {
+    store.getState().finishHydration(cause);
+  }
 }
 
 export function migrateWorkbenchState(

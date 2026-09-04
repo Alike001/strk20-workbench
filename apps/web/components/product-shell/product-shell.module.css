@@ -623,6 +623,26 @@
   padding: clamp(3rem, 6vw, 5.5rem) var(--page-gutter) 4rem;
 }
 
+.routeMainCompact {
+  padding-top: clamp(1.6rem, 3vw, 2.6rem);
+}
+
+.routeMainCompact .routeHeading {
+  align-items: flex-end;
+  margin-bottom: 1.35rem;
+}
+
+.routeMainCompact .routeHeading h1 {
+  max-width: none;
+  font-size: clamp(2.4rem, 4vw, 3.8rem);
+  line-height: 1;
+}
+
+.routeMainCompact .routeHeading p {
+  max-width: 54rem;
+  margin-top: 0.7rem;
+}
+
 .routeHeading {
   display: flex;
   align-items: flex-start;
