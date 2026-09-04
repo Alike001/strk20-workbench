@@ -1,0 +1,164 @@
+.actorCard {
+  display: grid;
+  width: 100%;
+  min-width: 0;
+  gap: 1rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-medium);
+  padding: clamp(1rem, 3vw, 1.25rem);
+  background: var(--surface);
+  color: var(--foreground);
+}
+
+.active {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 1px var(--accent);
+}
+
+.header {
+  display: flex;
+  min-width: 0;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.eyebrow,
+.addressLabel,
+.fact dt {
+  color: var(--muted);
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  line-height: 1.4;
+  text-transform: uppercase;
+}
+
+.eyebrow {
+  display: block;
+  margin-bottom: 0.25rem;
+}
+
+.name {
+  margin: 0;
+  font-size: clamp(1.25rem, 4vw, 1.6rem);
+  letter-spacing: -0.03em;
+  line-height: 1.1;
+}
+
+.activeLabel {
+  flex: none;
+  border: 1px solid var(--accent);
+  border-radius: 999px;
+  padding: 0.35rem 0.55rem;
+  color: var(--accent-strong);
+  font-size: 0.68rem;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.addressBlock {
+  min-width: 0;
+  margin: 0;
+}
+
+.addressLabel,
+.address {
+  display: block;
+}
+
+.address {
+  max-width: 100%;
+  margin-top: 0.35rem;
+  overflow-wrap: anywhere;
+  color: var(--muted);
+  font-family: var(--font-mono);
+  font-size: 0.76rem;
+  line-height: 1.5;
+}
+
+.facts {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.75rem;
+  margin: 0;
+}
+
+.fact {
+  min-width: 0;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-small);
+  padding: 0.8rem;
+  background: var(--surface-raised);
+}
+
+.publicBalance {
+  border-top: 2px solid var(--accent);
+}
+
+.privateBalance {
+  border-top: 2px dashed var(--accent-strong);
+  background: var(--surface-muted);
+}
+
+.registrationFact {
+  grid-column: 1 / -1;
+}
+
+.fact dd {
+  min-width: 0;
+  margin: 0.55rem 0 0;
+  overflow-wrap: anywhere;
+}
+
+.amount {
+  font-family: var(--font-mono);
+  font-size: clamp(1.15rem, 4vw, 1.45rem);
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.symbol {
+  margin-left: 0.4rem;
+  color: var(--muted);
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+}
+
+.registration {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  font-size: 0.78rem;
+  font-weight: 700;
+}
+
+.registrationMarker {
+  width: 0.5rem;
+  height: 0.5rem;
+  border: 1px solid currentcolor;
+  border-radius: 50%;
+  background: currentcolor;
+}
+
+.registered {
+  color: var(--success);
+}
+
+.notRegistered {
+  color: var(--warning);
+}
+
+.pending {
+  color: var(--accent);
+}
+
+@media (max-width: 32rem) {
+  .facts {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .registrationFact {
+    grid-column: auto;
+  }
+}
