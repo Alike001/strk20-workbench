@@ -75,3 +75,14 @@
 - A hidden compatibility route now discovers only after a user click and connects only after a second explicit wallet choice. It reports safe feature/version data without requesting STRK20 balances, preparing proofs, or submitting transactions.
 - Frozen-compatible install, lint, typecheck, five tests, and the Next.js 16.2.9 Webpack build pass. A wallet-free browser scan also passes; the real Ready/Xverse connection and four Telegram answers remain external gates, so checklist item 3 stays open.
 - Team parallelism was refined: the second builder receives only prop-driven, isolated frontend components with explicit file boundaries while the primary branch owns architecture, wallet dependencies, global styles, and integration.
+
+## 2026-09-04 — Product shell candidate
+
+- A corrected image-generated product concept established the visual specification: an approachable engineering control room, dark graphite surface, cyan-teal primary accent, restrained amber privacy state, editorial sans typography, and precise monospaced technical chrome.
+- The first concept's inaccurate public-Bob implication was rejected. The accepted reference accurately labels public deposit and withdrawal edges while keeping sender, recipient, amount, token, and spent notes hidden for the in-pool transfer.
+- The implementation adds the Introduction, Workbench, Integrate, Evidence, and Documentation route shells with a persistent `Sandbox · Simulated proof` boundary and no automatic wallet request.
+- The homepage states the developer value proposition, provides the two required actions, demonstrates the private-transfer/X-ray relationship, and maps one scenario through Sandbox, Wallet API, and Mainnet evidence.
+- Evidence remains truthful at zero verified mainnet transactions, and the Integrate page labels the package as workspace-only rather than pretending it is published.
+- Playwright was used because no separate in-app Browser tool was available. Desktop 1536×1024 and mobile 390×844 renders were inspected against the concept; the headline wrap and canvas alignment were corrected, all five routes loaded, and the mobile document width matched the viewport.
+- Teammate issue `#3` gives `Webghost01-NG` a reusable `EnvironmentStatus` component in four isolated files. It prohibits edits to pages, global styles, wallet code, dependencies, and architecture so parallel work remains merge-safe.
+- Review pause 1 remains open for the participant's thirty-second comprehension and visual-direction check.
