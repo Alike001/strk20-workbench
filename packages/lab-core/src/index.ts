@@ -26,12 +26,18 @@ export { getPrivacyFacts, PRIVACY_CATALOG_VERSION } from "./privacy";
 export {
   CANONICAL_TOKEN_ID,
   createCanonicalScenarioState,
+  createImmutableScenarioSnapshot,
   createInitialState,
   getBalance,
   SCENARIO_SCHEMA_VERSION,
   totalValue,
   validateAction,
 } from "./scenario";
+export {
+  SandboxAdapter,
+  type SandboxFailureInjection,
+  type SandboxFailureKind,
+} from "./sandbox-adapter";
 export type * from "./types";
 
 import type { CompatibilitySummary } from "./types";

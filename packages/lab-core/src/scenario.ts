@@ -107,6 +107,12 @@ export function createInitialState(input: {
   });
 }
 
+export function createImmutableScenarioSnapshot(
+  state: ScenarioState,
+): ScenarioState {
+  return freezeScenario(state);
+}
+
 export function getBalance(
   state: ScenarioState,
   actorId: string,
