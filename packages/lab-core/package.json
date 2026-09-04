@@ -14,6 +14,8 @@
   },
   "scripts": {
     "build": "tsc -p tsconfig.json",
-    "typecheck": "tsc -p tsconfig.json --noEmit"
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "test": "vitest run --root ../.. packages/lab-core/tests",
+    "test:coverage": "vitest run --root ../.. packages/lab-core/tests --coverage"
   }
 }

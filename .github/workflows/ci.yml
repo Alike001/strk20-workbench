@@ -40,6 +40,9 @@ jobs:
       - name: Test
         run: pnpm test
 
+      - name: Check Lab Core coverage
+        run: pnpm test:coverage
+
       - name: Check formatting
         run: pnpm format:check
 
