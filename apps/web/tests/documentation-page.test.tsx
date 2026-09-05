@@ -54,7 +54,10 @@ describe("Documentation page", () => {
     expect(html).toContain(
       "Public at the edges: deposits, withdrawals, timing, and app-side DeFi activity.",
     );
-    expect(html).toContain("The hosted app does not handle private keys");
+    expect(html).toContain("The hosted app never receives private keys");
+    expect(html).toContain(
+      "verifies the public transaction receipt separately",
+    );
   });
 
   it("keeps all four repository guide links", () => {

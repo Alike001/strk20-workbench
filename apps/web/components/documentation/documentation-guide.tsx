@@ -23,7 +23,7 @@ const toolkitLayers = [
     state: "extracting",
     description:
       "The web app checks STRK20 wallet capabilities and keeps signing, note discovery, proving, and submission wallet-side.",
-    responsibilities: ["Check capability", "Prepare review", "Verify receipt"],
+    responsibilities: ["Check capability", "Prepare proof", "Submit action"],
   },
   {
     number: "03",
@@ -262,9 +262,10 @@ export function DocumentationGuide(): JSX.Element {
         </div>
 
         <p className={styles.boundaryNote}>
-          The hosted app does not handle private keys, viewing keys, note
-          discovery, or proof requests. A compatible privacy-enabled wallet owns
-          those responsibilities in real mode.
+          The hosted app never receives private keys, viewing keys, or note
+          data. In real mode it requests proof preparation and submission
+          through a compatible privacy-enabled wallet, then verifies the public
+          transaction receipt separately.
         </p>
       </section>
 
