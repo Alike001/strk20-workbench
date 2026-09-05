@@ -23,10 +23,18 @@ export function SubmissionReadinessPanel({
   contractAddresses,
   repositoryUrl,
 }: SubmissionReadinessPanelProps): JSX.Element {
+  const countsValid =
+    Number.isInteger(verifiedTransactionCount) &&
+    verifiedTransactionCount >= 0 &&
+    Number.isInteger(requiredTransactionCount) &&
+    requiredTransactionCount > 0;
+  const safeDemoUrl = safeExternalUrl(demoUrl);
+  const safeDemoVideoUrl = safeExternalUrl(demoVideoUrl);
+  const safeRepositoryUrl = safeExternalUrl(repositoryUrl);
   const transactionsReady =
-    verifiedTransactionCount >= requiredTransactionCount;
-  const publicDemoReady = Boolean(demoUrl) || deploymentDetected;
-  const demoVideoReady = Boolean(demoVideoUrl);
+    countsValid && verifiedTransactionCount >= requiredTransactionCount;
+  const publicDemoReady = Boolean(safeDemoUrl) || deploymentDetected;
+  const demoVideoReady = Boolean(safeDemoVideoUrl);
   const repositoryEvidenceReady =
     transactionsReady && publicDemoReady && demoVideoReady;
 
@@ -88,30 +96,38 @@ export function SubmissionReadinessPanel({
             title="Verified transactions"
             state={transactionsReady ? "ready" : "incomplete"}
             summary={
-              transactionsReady
-                ? "Transaction count met"
-                : "Verified transaction evidence is incomplete"
+              !countsValid
+                ? "Transaction counts need correction"
+                : transactionsReady
+                  ? "Transaction count met"
+                  : "Verified transaction evidence is incomplete"
             }
           >
-            <strong>
-              {verifiedTransactionCount} of {requiredTransactionCount}
-            </strong>{" "}
-            required transactions are verified.
+            {countsValid ? (
+              <>
+                <strong>
+                  {verifiedTransactionCount} of {requiredTransactionCount}
+                </strong>{" "}
+                required transactions are verified.
+              </>
+            ) : (
+              "The caller supplied an invalid transaction count."
+            )}
           </ChecklistItem>
 
           <ChecklistItem
             title="Public demo"
             state={publicDemoReady ? "ready" : "incomplete"}
             summary={
-              demoUrl
+              safeDemoUrl
                 ? "Demo link supplied"
                 : deploymentDetected
                   ? "Deployment detected"
                   : "Public demo is incomplete"
             }
           >
-            {demoUrl ? (
-              <ExternalLink href={demoUrl}>Open public demo</ExternalLink>
+            {safeDemoUrl ? (
+              <ExternalLink href={safeDemoUrl}>Open public demo</ExternalLink>
             ) : deploymentDetected ? (
               "A deployment was detected by the caller. No demo URL was supplied."
             ) : (
@@ -128,8 +144,10 @@ export function SubmissionReadinessPanel({
                 : "Demo video is incomplete"
             }
           >
-            {demoVideoUrl ? (
-              <ExternalLink href={demoVideoUrl}>Watch demo video</ExternalLink>
+            {safeDemoVideoUrl ? (
+              <ExternalLink href={safeDemoVideoUrl}>
+                Watch demo video
+              </ExternalLink>
             ) : (
               "No demo video URL was supplied."
             )}
@@ -159,12 +177,20 @@ export function SubmissionReadinessPanel({
 
           <ChecklistItem
             title="Repository"
-            state="available"
-            summary="Source link supplied"
+            state={safeRepositoryUrl ? "available" : "incomplete"}
+            summary={
+              safeRepositoryUrl
+                ? "Source link supplied"
+                : "Repository link unavailable"
+            }
           >
-            <ExternalLink href={repositoryUrl}>
-              Open source repository
-            </ExternalLink>
+            {safeRepositoryUrl ? (
+              <ExternalLink href={safeRepositoryUrl}>
+                Open source repository
+              </ExternalLink>
+            ) : (
+              "No safe HTTPS repository URL was supplied."
+            )}
           </ChecklistItem>
         </ul>
       </section>
@@ -182,6 +208,16 @@ export function SubmissionReadinessPanel({
       </aside>
     </article>
   );
+}
+
+function safeExternalUrl(value: string | undefined): string | undefined {
+  if (!value) return undefined;
+  try {
+    const url = new URL(value);
+    return url.protocol === "https:" ? url.toString() : undefined;
+  } catch {
+    return undefined;
+  }
 }
 
 function ChecklistItem({

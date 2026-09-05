@@ -11,7 +11,7 @@ const baseProps: SubmissionReadinessPanelProps = {
   requiredTransactionCount: 3,
   deploymentDetected: false,
   contractAddresses: [],
-  repositoryUrl: "caller-repository-url",
+  repositoryUrl: "https://github.example/caller/repository",
 };
 
 function render(
@@ -62,7 +62,7 @@ describe("SubmissionReadinessPanel", () => {
   it("keeps overall readiness incomplete when the video is missing", () => {
     const html = render({
       verifiedTransactionCount: 3,
-      demoUrl: "caller-demo-url",
+      demoUrl: "https://demo.example",
     });
 
     expect(html).toContain("Transaction count met");
@@ -75,7 +75,7 @@ describe("SubmissionReadinessPanel", () => {
     const html = render({
       verifiedTransactionCount: 3,
       deploymentDetected: true,
-      demoVideoUrl: "caller-video-url",
+      demoVideoUrl: "https://video.example",
       contractAddresses: [],
     });
 
@@ -90,14 +90,14 @@ describe("SubmissionReadinessPanel", () => {
       props: {
         verifiedTransactionCount: 2,
         deploymentDetected: true,
-        demoVideoUrl: "caller-video-url",
+        demoVideoUrl: "https://video.example",
       },
     },
     {
       label: "public demo",
       props: {
         verifiedTransactionCount: 3,
-        demoVideoUrl: "caller-video-url",
+        demoVideoUrl: "https://video.example",
       },
     },
     {
@@ -114,8 +114,8 @@ describe("SubmissionReadinessPanel", () => {
   it("reports ready only when transactions, public demo, and video are ready", () => {
     const html = render({
       verifiedTransactionCount: 4,
-      demoUrl: "caller-demo-url",
-      demoVideoUrl: "caller-video-url",
+      demoUrl: "https://demo.example",
+      demoVideoUrl: "https://video.example",
     });
 
     expect(html).toContain("Repository evidence ready");
@@ -125,15 +125,15 @@ describe("SubmissionReadinessPanel", () => {
   it("renders only caller-supplied links and contract values", () => {
     const html = render({
       verifiedTransactionCount: 3,
-      demoUrl: "caller-demo-url",
-      demoVideoUrl: "caller-video-url",
+      demoUrl: "https://demo.example",
+      demoVideoUrl: "https://video.example",
       contractAddresses: ["caller-contract-one", "caller-contract-two"],
-      repositoryUrl: "caller-repository-url",
+      repositoryUrl: "https://github.example/caller/repository",
     });
 
-    expect(html).toContain('href="caller-repository-url"');
-    expect(html).toContain('href="caller-demo-url"');
-    expect(html).toContain('href="caller-video-url"');
+    expect(html).toContain('href="https://github.example/caller/repository"');
+    expect(html).toContain('href="https://demo.example/"');
+    expect(html).toContain('href="https://video.example/"');
     expect(html).toContain("caller-contract-one");
     expect(html).toContain("caller-contract-two");
     expect(html.match(/target="_blank"/g)).toHaveLength(3);
@@ -150,7 +150,7 @@ describe("SubmissionReadinessPanel", () => {
       "Sandbox activity, pending transactions, and unverified hashes are not evidence.",
     );
     expect(html).not.toContain("0x");
-    expect(html).not.toContain("https://");
+    expect(html).toContain("https://github.example/caller/repository");
     expect(html).not.toMatch(/submitted|accepted|qualified|approved|winner/i);
     expect(html).not.toMatch(
       /wallet key|viewing key|note contents|proof payload|balance|rpc secret|environment variable/i,
@@ -166,5 +166,25 @@ describe("SubmissionReadinessPanel", () => {
     expect(html).toContain('aria-label="Evidence readiness checklist"');
     expect(html).toContain("Verified transactions status: Incomplete");
     expect(html).toContain("Repository status: Available");
+  });
+
+  it("fails closed for invalid counts and unsafe external links", () => {
+    const html = render({
+      verifiedTransactionCount: 0,
+      requiredTransactionCount: 0,
+      demoUrl: "javascript:alert(1)",
+      demoVideoUrl: "data:text/html,unsafe",
+      repositoryUrl: "http://example.com/repository",
+    });
+
+    expect(html).toContain("Transaction counts need correction");
+    expect(html).toContain("invalid transaction count");
+    expect(html).toContain("Public demo is incomplete");
+    expect(html).toContain("Demo video is incomplete");
+    expect(html).toContain("Repository link unavailable");
+    expect(html).not.toContain("javascript:");
+    expect(html).not.toContain("data:text/html");
+    expect(html).not.toContain('href="http://');
+    expect(html).not.toContain(">Repository evidence ready<");
   });
 });
