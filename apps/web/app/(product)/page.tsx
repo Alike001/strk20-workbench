@@ -2,39 +2,51 @@ import Link from "next/link";
 
 import {
   ArrowRightIcon,
-  BuildingBlocks,
-  LandingTransferPreview,
+  EvidencePreview,
+  FinalToolkitCta,
+  MainnetPath,
+  PackageRail,
   ProductFrame,
+  ToolkitArchitecture,
+  ToolkitFooter,
+  ToolkitLayers,
+  ToolkitQuickstart,
 } from "../../components/product-shell";
-import styles from "../../components/product-shell/product-shell.module.css";
+import styles from "../../components/product-shell/toolkit-landing.module.css";
 
 export default function IntroductionPage() {
   return (
     <ProductFrame active="Introduction">
-      <main className={styles.introduction}>
+      <main className={styles.landing}>
         <section className={styles.hero}>
           <div className={styles.heroCopy}>
-            <h1>Add private transfers to your Starknet app.</h1>
+            <p className={styles.eyebrow}>STRK20 developer infrastructure</p>
+            <h1>Private token flows, ready to build.</h1>
             <p>
-              Try shielding, private transfers and withdrawals in a safe
-              playground. Then copy the components into your app and connect
-              STRK20.
+              Add shield, private transfer and withdraw to a Starknet app with
+              reusable components, wallet adapters and a safe local sandbox.
             </p>
             <div className={styles.heroActions}>
-              <Link className={styles.primaryAction} href="/workbench">
-                Try the playground <ArrowRightIcon />
+              <Link className={styles.primaryButton} href="/integrate">
+                Start with the toolkit <ArrowRightIcon />
               </Link>
-              <Link className={styles.secondaryAction} href="/integrate">
-                Explore components <ArrowRightIcon />
+              <Link className={styles.secondaryButton} href="/workbench">
+                Try the playground <ArrowRightIcon />
               </Link>
             </div>
           </div>
 
-          <LandingTransferPreview />
+          <ToolkitArchitecture />
         </section>
 
-        <BuildingBlocks />
+        <PackageRail />
+        <ToolkitLayers />
+        <ToolkitQuickstart />
+        <MainnetPath />
+        <EvidencePreview />
+        <FinalToolkitCta />
       </main>
+      <ToolkitFooter />
     </ProductFrame>
   );
 }

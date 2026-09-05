@@ -46,8 +46,8 @@ export function SiteHeader({ active }: { active: ProductRoute }) {
         </a>
       </nav>
 
-      <Link className={styles.headerAction} href="/workbench">
-        Get started
+      <Link className={styles.headerAction} href="/integrate">
+        Start building
       </Link>
     </header>
   );
