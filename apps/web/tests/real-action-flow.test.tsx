@@ -8,6 +8,7 @@ import {
   buildPoolFeePreview,
   createReviewedAction,
   displayStatus,
+  privateBalanceErrorMessage,
   readPrivateStrkBalance,
   readPoolFee,
 } from "../components/wallet-readiness";
@@ -57,6 +58,23 @@ describe("real action flow", () => {
     expect(readPrivateBalances).toHaveBeenCalledWith(
       ["0x04718f5a0fc34cc1af16a1cdee98ffb20c31f5cd61d6ab07201858f4287c938d"],
       undefined,
+    );
+  });
+
+  it("turns an unregistered balance response into first-use guidance", () => {
+    expect(
+      privateBalanceErrorMessage({
+        code: "NOT_REGISTERED",
+        title: "Private account not registered",
+        explanation: "This actor must register first.",
+        nextAction: "Register the actor.",
+        retryable: false,
+        phase: "awaiting-user",
+        mode: "real",
+        network: "SN_MAIN",
+      }),
+    ).toBe(
+      "Ready X says this wallet has not used STRK20 yet. Your first successful shield registers it automatically. No transaction was started.",
     );
   });
 

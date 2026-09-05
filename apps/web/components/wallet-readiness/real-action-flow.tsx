@@ -4,6 +4,7 @@ import {
   formatTokenAmount,
   parseTokenAmount,
   type LabAction,
+  type LabError,
 } from "@strk20-workbench/lab-core";
 import { useEffect, useMemo, useRef, useState } from "react";
 
@@ -132,7 +133,7 @@ export function RealActionFlow({
       if (!request.signal.aborted) {
         setPrivateBalance({
           status: "error",
-          label: balanceReadMessage(error),
+          label: privateBalanceErrorMessage(error),
         });
       }
     }
@@ -520,8 +521,19 @@ function isStrkBalance(balance: PrivateBalance): boolean {
   }
 }
 
-function balanceReadMessage(error: unknown): string {
-  const message = error instanceof Error ? error.message : "";
+export function privateBalanceErrorMessage(error: unknown): string {
+  if (isLabError(error)) {
+    if (error.code === "NOT_REGISTERED") {
+      return "Ready X says this wallet has not used STRK20 yet. Your first successful shield registers it automatically. No transaction was started.";
+    }
+    if (error.code === "WALLET_REJECTED") {
+      return "Balance access was cancelled in the wallet. No private balance was shared.";
+    }
+    if (error.code === "WALLET_UNSUPPORTED") {
+      return "This wallet version cannot provide the STRK20 balance request. No transaction was started.";
+    }
+  }
+  const message = walletErrorMessage(error);
   if (/reject|refus|cancel/i.test(message)) {
     return "Balance access was cancelled. No private balance was shared.";
   }
@@ -529,6 +541,28 @@ function balanceReadMessage(error: unknown): string {
     return "This wallet is not registered with STRK20 yet. Registration happens on first use.";
   }
   return "The private balance could not be read. No transaction was started.";
+}
+
+function isLabError(error: unknown): error is LabError {
+  return (
+    error !== null &&
+    typeof error === "object" &&
+    "code" in error &&
+    typeof error.code === "string"
+  );
+}
+
+function walletErrorMessage(error: unknown): string {
+  if (error instanceof Error) return error.message;
+  if (
+    error !== null &&
+    typeof error === "object" &&
+    "message" in error &&
+    typeof error.message === "string"
+  ) {
+    return error.message;
+  }
+  return "";
 }
 
 function isActivePhase(phase: RealActionPhase): boolean {

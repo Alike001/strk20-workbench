@@ -447,13 +447,25 @@ export class WalletApiAdapter implements LabAdapter {
 
   #classifyError(cause: unknown, phase: LabError["phase"]): LabError {
     const message = safeMessage(cause).toLowerCase();
-    if (isCancellation(cause))
+    const rpcCode = walletRpcErrorCode(cause);
+    if (rpcCode === 113 || isCancellation(cause))
       return this.#error("WALLET_REJECTED", phase, cause);
     if (
+      rpcCode === 118 ||
       message.includes("not_registered") ||
       message.includes("not registered")
     ) {
       return this.#error("NOT_REGISTERED", phase, cause);
+    }
+    if (
+      rpcCode === 119 ||
+      message.includes("insufficient_private_balance") ||
+      message.includes("insufficient private balance")
+    ) {
+      return this.#error("INSUFFICIENT_PRIVATE_BALANCE", phase, cause);
+    }
+    if (rpcCode === 162 || message.includes("api_version_not_supported")) {
+      return this.#error("WALLET_UNSUPPORTED", phase, cause);
     }
     if (message.includes("busy") || message.includes("429")) {
       return this.#error("PROVER_BUSY", phase, cause);
@@ -543,12 +555,34 @@ function requireAddress(value: string | undefined, label: string): string {
 
 function safeMessage(cause: unknown): string {
   if (cause instanceof Error && cause.message.trim()) return cause.message;
+  if (
+    cause !== null &&
+    typeof cause === "object" &&
+    "message" in cause &&
+    typeof cause.message === "string" &&
+    cause.message.trim()
+  ) {
+    return cause.message;
+  }
   return "The wallet request failed for an unknown reason.";
+}
+
+function walletRpcErrorCode(cause: unknown): number | undefined {
+  if (
+    cause === null ||
+    typeof cause !== "object" ||
+    !("code" in cause) ||
+    typeof cause.code !== "number"
+  ) {
+    return undefined;
+  }
+  return cause.code;
 }
 
 function isCancellation(cause: unknown): boolean {
   const message = safeMessage(cause).toLowerCase();
   return (
+    walletRpcErrorCode(cause) === 113 ||
     (cause instanceof DOMException && cause.name === "AbortError") ||
     message.includes("reject") ||
     message.includes("denied") ||

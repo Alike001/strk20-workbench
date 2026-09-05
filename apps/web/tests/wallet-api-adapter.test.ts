@@ -205,6 +205,26 @@ describe("WalletApiAdapter safety boundaries", () => {
     expect(wallet.strk20Balances).toHaveBeenCalledWith([TOKEN]);
   });
 
+  it("classifies structured Wallet API balance errors", async () => {
+    const unregistered = account();
+    vi.mocked(unregistered.strk20Balances).mockRejectedValue({
+      code: 118,
+      message: "An error occurred (NOT_REGISTERED)",
+    });
+    await expect(
+      createAdapter({ account: unregistered }).readPrivateBalances([TOKEN]),
+    ).rejects.toMatchObject({ code: "NOT_REGISTERED" });
+
+    const refused = account();
+    vi.mocked(refused.strk20Balances).mockRejectedValue({
+      code: 113,
+      message: "An error occurred (USER_REFUSED_OP)",
+    });
+    await expect(
+      createAdapter({ account: refused }).readPrivateBalances([TOKEN]),
+    ).rejects.toMatchObject({ code: "WALLET_REJECTED" });
+  });
+
   it("blocks unsupported wallets and wrong networks before invoking methods", async () => {
     const unsupported = account();
     const unsupportedResult = await createAdapter({
