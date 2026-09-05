@@ -7,6 +7,7 @@ import {
   RealActionFlow,
   createReviewedAction,
   displayStatus,
+  readPoolFee,
 } from "../components/wallet-readiness";
 import type { WalletApiAdapter } from "../lib/wallet/wallet-api-adapter";
 
@@ -26,9 +27,29 @@ describe("real action flow", () => {
     expect(html).toContain("Make public STRK private");
     expect(html).toContain("Send private STRK");
     expect(html).toContain("Return private STRK to public");
+    expect(html).toContain("Checking the official pool");
+    expect(html).toContain("disabled");
     expect(
       (adapter as unknown as Pick<LabAdapter, "execute">).execute,
     ).not.toHaveBeenCalled();
+  });
+
+  it("accepts only a successful formatted pool fee response", async () => {
+    const request = vi
+      .fn()
+      .mockResolvedValue(Response.json({ feeFormatted: "6 STRK" }));
+
+    await expect(readPoolFee(request)).resolves.toBe("6 STRK");
+    expect(request).toHaveBeenCalledWith(
+      "/api/pool-fee",
+      expect.objectContaining({ method: "GET", cache: "no-store" }),
+    );
+
+    await expect(
+      readPoolFee(
+        vi.fn().mockResolvedValue(Response.json({ feeFormatted: "unknown" })),
+      ),
+    ).rejects.toThrow(/invalid/i);
   });
 
   it("creates exact base-unit wallet actions from human amounts", () => {

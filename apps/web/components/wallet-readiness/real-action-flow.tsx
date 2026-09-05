@@ -1,7 +1,7 @@
 "use client";
 
 import { parseTokenAmount, type LabAction } from "@strk20-workbench/lab-core";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 import {
   ActionReviewPanel,
@@ -26,6 +26,11 @@ type Draft = Readonly<{
   recipient: string;
 }>;
 
+type PoolFeeState =
+  | Readonly<{ status: "loading"; label: string }>
+  | Readonly<{ status: "ready"; label: string }>
+  | Readonly<{ status: "error"; label: string }>;
+
 const EMPTY_DRAFT: Draft = {
   action: "shield",
   amount: "0.01",
@@ -43,10 +48,42 @@ export function RealActionFlow({
   const [draft, setDraft] = useState<Draft>(EMPTY_DRAFT);
   const [reviewedDraft, setReviewedDraft] = useState<Draft>();
   const [draftError, setDraftError] = useState<string>();
+  const [feeRefresh, setFeeRefresh] = useState(0);
+  const [poolFee, setPoolFee] = useState<PoolFeeState>({
+    status: "loading",
+    label: "Checking the official pool…",
+  });
   const controller = useMemo(
     () => new RealActionController({ adapter, onChange: setState }),
     [adapter],
   );
+
+  useEffect(() => {
+    let active = true;
+    void readPoolFee()
+      .then((label) => {
+        if (active) setPoolFee({ status: "ready", label });
+      })
+      .catch(() => {
+        if (active) {
+          setPoolFee({
+            status: "error",
+            label: "Unavailable — real actions stay locked",
+          });
+        }
+      });
+    return () => {
+      active = false;
+    };
+  }, [feeRefresh]);
+
+  function retryPoolFee() {
+    setPoolFee({
+      status: "loading",
+      label: "Checking the official pool…",
+    });
+    setFeeRefresh((attempt) => attempt + 1);
+  }
 
   function review() {
     try {
@@ -160,8 +197,22 @@ export function RealActionFlow({
               <strong>No transaction starts here.</strong> You will see a final
               review before the wallet prepares anything.
             </p>
-            <button type="submit">Review real action</button>
+            <button type="submit" disabled={poolFee.status !== "ready"}>
+              Review real action
+            </button>
           </div>
+          <p className={styles.controllerMessage} role="status">
+            Current pool fee: {poolFee.label}
+          </p>
+          {poolFee.status === "error" ? (
+            <button
+              className={styles.recoveryAction}
+              type="button"
+              onClick={retryPoolFee}
+            >
+              Check the pool fee again
+            </button>
+          ) : null}
           {draftError ? <p role="alert">{draftError}</p> : null}
         </form>
       ) : (
@@ -175,7 +226,7 @@ export function RealActionFlow({
             networkLabel="Starknet Mainnet"
             onCancel={closeOrCancel}
             onConfirm={() => void controller.confirm()}
-            poolFee="Calculated and shown by your wallet"
+            poolFee={`${poolFee.label} · confirm again in your wallet`}
             recipientAddress={reviewedDraft.recipient || undefined}
             status={displayStatus(state.phase)}
             tokenAddress={STRK_TOKEN}
@@ -210,6 +261,28 @@ export function RealActionFlow({
       )}
     </section>
   );
+}
+
+export async function readPoolFee(
+  request: typeof fetch = fetch,
+): Promise<string> {
+  const response = await request("/api/pool-fee", {
+    method: "GET",
+    cache: "no-store",
+  });
+  if (!response.ok) throw new Error("The pool fee is unavailable.");
+  const payload: unknown = await response.json();
+  if (!payload || typeof payload !== "object" || Array.isArray(payload)) {
+    throw new Error("The pool fee response is invalid.");
+  }
+  const feeFormatted = (payload as { feeFormatted?: unknown }).feeFormatted;
+  if (
+    typeof feeFormatted !== "string" ||
+    !/^\d+(?:\.\d+)? STRK$/.test(feeFormatted)
+  ) {
+    throw new Error("The pool fee response is invalid.");
+  }
+  return feeFormatted;
 }
 
 export function createReviewedAction(draft: Draft): LabAction {
