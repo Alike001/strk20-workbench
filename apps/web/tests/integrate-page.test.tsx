@@ -16,6 +16,10 @@ describe("Components page", () => {
     expect(html).toContain("Add the component to an app.");
     expect(html).toContain("Connect a supported STRK20 wallet for real mode.");
     expect(html).toContain("Sandbox uses fake tokens and simulated results.");
+    expect(html).toContain("pnpm install --frozen-lockfile");
+    expect(html).toContain("pnpm --filter @strk20-workbench/example dev");
+    expect(html).toContain("@strk20-workbench/react");
+    expect(html).toContain("@strk20-workbench/react/styles.css");
     expect(html).toContain('href="/workbench"');
     expect(html).toContain('href="/documentation"');
   });
@@ -23,7 +27,7 @@ describe("Components page", () => {
   it("does not present the workspace package as npm-published", () => {
     const html = renderToStaticMarkup(<IntegratePage />);
 
-    expect(html).not.toContain("npm install");
-    expect(html).not.toContain("@strk20-workbench/react");
+    expect(html).not.toContain("<code>npm install");
+    expect(html).toContain("Workspace-only today");
   });
 });

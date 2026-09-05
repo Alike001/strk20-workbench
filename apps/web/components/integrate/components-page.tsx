@@ -178,6 +178,49 @@ export function ComponentsPage(): JSX.Element {
         </ol>
       </section>
 
+      <section
+        className={styles.quickstart}
+        aria-labelledby="quickstart-heading"
+      >
+        <div className={styles.quickstartCopy}>
+          <h2 id="quickstart-heading">Use it in your app.</h2>
+          <p>
+            The React package is workspace-ready. Clone this repository, install
+            dependencies, and run the separate consumer to see only public
+            package exports in use.
+          </p>
+          <ol>
+            <li>
+              <span>1</span>
+              <code>pnpm install --frozen-lockfile</code>
+            </li>
+            <li>
+              <span>2</span>
+              <code>pnpm --filter @strk20-workbench/example dev</code>
+            </li>
+          </ol>
+        </div>
+
+        <div className={styles.codePanel} aria-label="React component example">
+          <span>Workspace React API</span>
+          <pre>
+            <code>{`import { PrivateTransfer } from "@strk20-workbench/react";
+import "@strk20-workbench/react/styles.css";
+
+<PrivateTransfer
+  amount={amount}
+  mode="sandbox"
+  onAmountChange={setAmount}
+  onSubmit={sendPrivately}
+/>`}</code>
+          </pre>
+          <p>
+            Workspace-only today. Sandbox is simulated; supported wallet mode is
+            the next milestone.
+          </p>
+        </div>
+      </section>
+
       <aside
         className={styles.truthBoundary}
         aria-label="Sandbox truth boundary"
