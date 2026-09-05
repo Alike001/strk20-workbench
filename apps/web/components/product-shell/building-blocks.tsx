@@ -65,17 +65,22 @@ export function BuildingBlocks() {
         </div>
         <div
           className={styles.codePreview}
-          aria-label="Planned React component interface"
+          aria-label="Workspace React component example"
         >
-          <span>Planned React API</span>
+          <span>Workspace React API</span>
           <pre>
             <code>{`import { PrivateTransfer } from "@strk20-workbench/react";
 
-<PrivateTransfer mode="sandbox" />`}</code>
+<PrivateTransfer
+  amount={amount}
+  mode="sandbox"
+  onAmountChange={setAmount}
+  onSubmit={sendPrivately}
+/>`}</code>
           </pre>
           <p>
-            The reusable React package is the next build milestone. The
-            playground works today in Sandbox.
+            Available in this repository today. Sandbox is simulated; supported
+            wallet mode is the next milestone.
           </p>
         </div>
       </div>
