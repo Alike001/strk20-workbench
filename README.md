@@ -2,7 +2,7 @@
 
 Add private transfers to a Starknet app with reusable building blocks and a safe visual playground.
 
-STRK20 Workbench is an open-source STRK20 component kit in active development. Builders can first try Shield, Send privately, and Withdraw with fake tokens in the lightweight browser Sandbox, understand what observers can and cannot see, and then use the same building blocks in their own application. Lab Core is the framework-neutral engine underneath the interface.
+STRK20 Workbench is an open-source STRK20 component kit in active development. Builders can first try Shield, Send privately, and Withdraw with fake tokens in the lightweight browser Sandbox, understand what observers can and cannot see, and then use the same React building blocks in their own application. Lab Core is the framework-neutral engine underneath the interface.
 
 ## Why it exists
 
@@ -13,7 +13,7 @@ STRK20 supplies the privacy protocol. Application developers still need understa
 
 ## Project status
 
-The guided Sandbox and Lab Core engine are implemented. The reusable React component package and real-wallet path are the next milestones. The accepted research, product requirements, architecture, and build contract live in [`context/`](./context/README.md).
+The guided Sandbox, Lab Core engine, reusable React package, and independent Vite consumer are implemented. The real-wallet path is the next major milestone. The accepted research, product requirements, architecture, and build contract live in [`context/`](./context/README.md).
 
 The first release is planned as a lightweight pnpm workspace containing:
 

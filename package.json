@@ -12,7 +12,7 @@
     "dev": "pnpm --filter @strk20-workbench/web dev",
     "build": "pnpm -r --if-present build",
     "lint": "eslint . --max-warnings=0",
-    "typecheck": "pnpm --filter @strk20-workbench/lab-core build && pnpm -r --if-present typecheck",
+    "typecheck": "pnpm --filter @strk20-workbench/lab-core build && pnpm --filter @strk20-workbench/react build && pnpm -r --if-present typecheck",
     "test": "vitest run",
     "test:coverage": "vitest run packages/lab-core/tests --coverage",
     "test:e2e": "playwright test",

@@ -163,11 +163,15 @@ project-root/
 │   │       ├── integration/
 │   │       └── browser/
 │   └── example/
-│       ├── src/                              # Separate consumer of lab-core
+│       ├── src/                              # Separate Vite consumer of public packages
 │       ├── tests/
 │       ├── package.json
 │       └── README.md
 ├── packages/
+│   ├── react/                                # Controlled privacy-flow UI components
+│   │   ├── src/
+│   │   ├── tests/
+│   │   └── package.json
 │   └── lab-core/
 │       ├── src/
 │       │   ├── actions.ts                    # Action schemas and constructors
@@ -1031,7 +1035,7 @@ Mitigation:
 
 - build canonical sandbox and hosted shell first;
 - perform wallet/mainnet spike before secondary polish;
-- keep one shared package and two small apps;
+- keep two focused shared packages and two small apps;
 - defer anonymizer until the gate;
 - no Docker/database/authentication/general component library.
 
@@ -1041,7 +1045,7 @@ Verification gate: the project retains a deployable, understandable product at t
 
 ### Finding 1: A separate example application adds build cost
 
-Decision: keep it deliberately tiny. Its purpose is to prove that `lab-core` is reusable. It does not need the full workbench design system or a separate production deployment.
+Decision: keep it deliberately tiny. Its purpose is to prove that `lab-core` and the React component package are reusable. It uses the shared component stylesheet but does not import the Workbench frontend or require a separate production deployment.
 
 ### Finding 2: A generic RPC proxy can introduce security and maintenance work
 
@@ -1085,9 +1089,9 @@ Exit: changed valid inputs produce changed correct results; invalid inputs produ
 - Integrate page;
 - separate example consumer;
 - five-minute quickstart;
-- core package tests and documentation.
+- core and React package tests and documentation.
 
-Exit: example consumes `lab-core` without importing web internals.
+Exit: example consumes public Lab Core/React exports without importing web internals.
 
 ### Milestone D: real STRK20 path
 

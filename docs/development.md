@@ -68,13 +68,14 @@ The sandbox does not require an RPC key. Never commit `.env.local`.
 
 ## Workspace Architecture
 
-STRK20 Workbench is organized as a pnpm workspace with three core directories:
+STRK20 Workbench is organized as a pnpm workspace with four core directories:
 
 | Folder                                      | Package Name                 | Description                                                                                                                                                                                                                                               |
 | ------------------------------------------- | ---------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | [`apps/web`](../apps/web)                   | `@strk20-workbench/web`      | Hosted Next.js visual workbench. Allows developers to test privacy scenarios (registration, shielding, private transfer, withdrawal), inspect public and private data views, diagnose simulated failure modes, and connect to supported Starknet wallets. |
-| [`apps/example`](../apps/example)           | `@strk20-workbench/example`  | Minimal standalone TypeScript application demonstrating how external consumers can use `@strk20-workbench/lab-core` independently of the web frontend.                                                                                                    |
+| [`apps/example`](../apps/example)           | `@strk20-workbench/example`  | Minimal standalone Vite application demonstrating how another frontend consumes the public React package without importing Workbench web internals.                                                                                                       |
 | [`packages/lab-core`](../packages/lab-core) | `@strk20-workbench/lab-core` | Framework-neutral TypeScript library holding the scenario core, deterministic simulation primitives, and state definitions. Built before dependent packages typecheck.                                                                                    |
+| [`packages/react`](../packages/react)       | `@strk20-workbench/react`    | Controlled Shield, PrivateTransfer, Withdraw, FlowProgress, and PrivacyFacts React components. Workspace-only until the package API and real-wallet path are finalized.                                                                                   |
 
 ---
 
@@ -89,6 +90,12 @@ pnpm dev
 ```
 
 Starts the visual workbench web app at `http://localhost:3000` via Next.js (`apps/web`).
+
+To run the separate component consumer:
+
+```bash
+pnpm --filter @strk20-workbench/example dev
+```
 
 ### Formatting
 

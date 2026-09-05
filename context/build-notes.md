@@ -96,3 +96,13 @@
 - Three accepted visual references live in `context/design/`: landing, building blocks, and guided playground. The implementation was compared at 1536×1024 and 390×844 using Playwright with system Chrome because the in-app browser was unavailable.
 - Registration is now automatic first-use setup in the guided Sandbox rather than a visible fourth product step. Protocol events, failure injection, and advanced evidence remain available under **Developer details**.
 - The homepage does not claim that `@strk20-workbench/react` is already shipped: its code preview is explicitly labelled **Planned React API**, and package delivery is the next checklist milestone.
+
+## 2026-09-05 — React component package and teammate split
+
+- Review pause 2 was accepted when the participant approved the refined design and asked to continue.
+- Teammate issue `#7` gives `Webghost01-NG` the Components/Integrate page with strict file boundaries. Their GitHub access is read-only, so the issue mention is the assignment signal and their PR will come from a fork as before.
+- The primary branch owns the new workspace-only `@strk20-workbench/react` package and its public API: Shield, PrivateTransfer, Withdraw, FlowProgress, and PrivacyFacts.
+- Action components are controlled rather than pretending to be a wallet. The consumer supplies the execution callback and must choose `sandbox` or `real`; built-in copy preserves that truth boundary.
+- The independent example is now a lightweight Vite application. Context7's current Vite guidance was checked before configuration, and exact Vite/plugin versions were verified against package metadata.
+- The initial consumer typecheck correctly failed until the React package declarations were built first. The root typecheck now builds Lab Core and the React package before checking dependents, matching an external consumer boundary.
+- Desktop 1536×1024 and mobile 390×844 renders were inspected against the accepted playground concept using Playwright with system Chrome. An 18 px mobile overflow was found and fixed; the complete Shield → Send privately → Withdraw interaction passed.
