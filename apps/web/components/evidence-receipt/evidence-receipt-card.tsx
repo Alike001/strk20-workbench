@@ -146,7 +146,7 @@ export function EvidenceReceiptCard({
       <section className={styles.technicalEvidence}>
         <div className={styles.evidenceHeading}>
           <div>
-            <p>Public receipt fields</p>
+            <p>Receipt and caller context</p>
             <h3>Technical evidence</h3>
           </div>
           <span>
@@ -155,7 +155,10 @@ export function EvidenceReceiptCard({
         </div>
 
         <dl className={styles.evidenceList}>
-          <EvidenceField label="Action" value={actionLabels[action]} />
+          <EvidenceField
+            label="Requested action"
+            value={actionLabels[action]}
+          />
           <EvidenceField label="Network" value={networkLabel} />
           <EvidenceField label="Expected pool" value={poolAddress} technical />
           <EvidenceField
@@ -180,7 +183,9 @@ export function EvidenceReceiptCard({
             <span>No explorer URL supplied by the caller.</span>
           )}
           <p>
-            Public evidence does not prove that all action details were private.
+            The requested action is caller context, not necessarily a public
+            receipt field. Public evidence does not prove that all action
+            details were private.
           </p>
         </div>
       </section>

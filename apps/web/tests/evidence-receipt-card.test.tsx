@@ -110,6 +110,10 @@ describe("EvidenceReceiptCard", () => {
     expect(html).toContain(
       "Public evidence does not prove that all action details were private.",
     );
+    expect(html).toContain(
+      "The requested action is caller context, not necessarily a public receipt field.",
+    );
+    expect(html).not.toContain("Public receipt fields");
     expect(html).not.toMatch(/hackathon|qualif(?:y|ied|ication)/i);
     expect(html).not.toMatch(
       /private key|viewing key|note contents|proof payload|balance/i,
