@@ -16,6 +16,8 @@
     "test": "vitest run",
     "test:coverage": "vitest run packages/lab-core/tests --coverage",
     "test:e2e": "playwright test",
+    "validate:submission": "node scripts/validate-strk20-json.mjs",
+    "validate:submission:final": "node scripts/validate-strk20-json.mjs --require-complete",
     "format": "prettier --write .",
     "format:check": "prettier --check ."
   },
