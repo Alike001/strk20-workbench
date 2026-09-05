@@ -1,4 +1,5 @@
 import { ProductFrame } from "../../../components/product-shell";
+import { RealWalletGateway } from "../../../components/wallet-readiness";
 import { WorkbenchExperience } from "../../../components/workbench";
 import styles from "../../../components/workbench/workbench.module.css";
 
@@ -22,7 +23,10 @@ export default function WorkbenchPage() {
           </div>
           <p>Sandbox · No wallet · No real funds</p>
         </header>
-        <WorkbenchExperience />
+        <section id="sandbox-workbench">
+          <WorkbenchExperience />
+        </section>
+        <RealWalletGateway />
       </main>
     </ProductFrame>
   );
