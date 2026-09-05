@@ -10,6 +10,7 @@ import {
   WalletApiAdapter,
   isMainnetChain,
   mapLabActionToStrk20,
+  selectHighestWalletApiVersion,
   type Strk20WalletAccount,
   type TransactionVerifier,
 } from "../lib/wallet/wallet-api-adapter";
@@ -175,6 +176,11 @@ describe("WalletApiAdapter action mapping", () => {
 });
 
 describe("WalletApiAdapter safety boundaries", () => {
+  it("selects the highest advertised Wallet API version numerically", () => {
+    expect(selectHighestWalletApiVersion(["0.10.3", "0.7.2"])).toBe("0.10.3");
+    expect(selectHighestWalletApiVersion(["invalid"])).toBeUndefined();
+  });
+
   it("reports capabilities without requesting balances or preparing a proof", async () => {
     const wallet = account();
     const report = await createAdapter({ account: wallet }).getCapabilities();

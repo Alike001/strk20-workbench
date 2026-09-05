@@ -52,6 +52,12 @@ describe("real wallet gateway", () => {
     expect(readinessFrom({ chainId: "SN_SEPOLIA" }, report("ready"))).toBe(
       "wrong-network",
     );
+    expect(
+      readinessFrom(
+        { chainId: "SN_MAIN" },
+        { checkedAt: "2026-09-05T00:00:00.000Z", capabilities: [] },
+      ),
+    ).toBe("unsupported");
   });
 
   it("requires the hosted receipt verifier to report Starknet Mainnet", async () => {

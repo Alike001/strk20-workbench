@@ -128,7 +128,7 @@ export class WalletApiAdapter implements LabAdapter {
         actionsReady
           ? ready(
               "wallet-methods-present",
-              `Wallet API ${this.#highestApiVersion()} exposes the STRK20 methods.`,
+              `Wallet API ${selectHighestWalletApiVersion(this.#walletApiVersions) ?? "unknown"} exposes the STRK20 methods.`,
             )
           : unavailable(
               "wallet-methods-present",
@@ -427,15 +427,6 @@ export class WalletApiAdapter implements LabAdapter {
     );
   }
 
-  #highestApiVersion(): string {
-    return (
-      [...this.#walletApiVersions]
-        .filter((version) => numericVersion(version) !== null)
-        .sort((left, right) => compareNumericVersions(right, left))[0] ??
-      "unknown"
-    );
-  }
-
   #preflightError(phase: LabError["phase"]): LabError | undefined {
     if (!isMainnetChain(this.#chainId)) {
       return this.#error("WRONG_NETWORK", phase);
@@ -597,6 +588,14 @@ function versionMeetsMinimum(version: string, minimum: string): boolean {
     numericVersion(version) !== null &&
     compareNumericVersions(version, minimum) >= 0
   );
+}
+
+export function selectHighestWalletApiVersion(
+  versions: readonly string[],
+): string | undefined {
+  return [...versions]
+    .filter((version) => numericVersion(version) !== null)
+    .sort((left, right) => compareNumericVersions(right, left))[0];
 }
 
 function assertNotAborted(signal?: AbortSignal): void {

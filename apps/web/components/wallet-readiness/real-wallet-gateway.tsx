@@ -10,6 +10,7 @@ import { RpcTransactionVerifier } from "../../lib/wallet/rpc-transaction-verifie
 import {
   WalletApiAdapter,
   isMainnetChain,
+  selectHighestWalletApiVersion,
 } from "../../lib/wallet/wallet-api-adapter";
 import {
   connectPrivacyWallet,
@@ -53,7 +54,7 @@ export function RealWalletGateway() {
   }, []);
 
   const supportedVersion = useMemo(
-    () => session?.walletApiVersions.at(-1),
+    () => selectHighestWalletApiVersion(session?.walletApiVersions ?? []),
     [session],
   );
 
@@ -219,14 +220,16 @@ export function readinessFrom(
   report: CapabilityReport,
 ): WalletReadinessState {
   if (!isMainnetChain(session.chainId)) return "wrong-network";
-  const required = report.capabilities.filter((capability) =>
-    [
-      "wallet-methods-present",
-      "pool-configuration-matches",
-      "rpc-verification-available",
-    ].includes(capability.name),
-  );
-  return required.every((capability) => capability.status === "ready")
+  const requiredNames = [
+    "wallet-methods-present",
+    "pool-configuration-matches",
+    "rpc-verification-available",
+  ] as const;
+  return requiredNames.every(
+    (name) =>
+      report.capabilities.find((capability) => capability.name === name)
+        ?.status === "ready",
+  )
     ? "ready"
     : "unsupported";
 }
