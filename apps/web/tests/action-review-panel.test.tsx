@@ -34,7 +34,7 @@ const baseProps: ActionReviewPanelProps = {
 };
 
 const statuses: ReadonlyArray<readonly [RealActionStatus, string, string]> = [
-  ["review", "Review this real action.", "Nothing has been submitted."],
+  ["review", "Review this real action.", "Continuing starts proof preparation"],
   [
     "preparing-proof",
     "Preparing the proof request...",
@@ -183,10 +183,7 @@ describe("ActionReviewPanel", () => {
     const onCancel = vi.fn();
     const tree = ActionReviewPanel({ ...baseProps, onConfirm, onCancel });
 
-    findButton(
-      tree,
-      "Ask wallet to prepare private transfer",
-    ).props.onClick?.();
+    findButton(tree, "Continue to wallet approvals").props.onClick?.();
     findButton(tree, "Cancel review").props.onClick?.();
 
     expect(onConfirm).toHaveBeenCalledOnce();
@@ -226,7 +223,7 @@ describe("ActionReviewPanel", () => {
   it("never asks for or renders wallet secrets", () => {
     const html = render();
 
-    expect(html).toContain("never asks for private keys");
+    expect(html).toContain("never asks for your secrets");
     expect(html).not.toContain("seed phrase");
     expect(html).not.toContain("Enter private key");
   });

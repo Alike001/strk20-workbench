@@ -37,7 +37,6 @@ export interface ActionReviewPanelProps {
 
 interface ActionCopy {
   label: string;
-  requestLabel: string;
   summary: (props: ActionReviewPanelProps) => string;
   privateFact: string;
   publicFact: string;
@@ -52,7 +51,6 @@ interface StatusCopy {
 const actionCopy: Record<RealAction, ActionCopy> = {
   shield: {
     label: "Shield",
-    requestLabel: "shield",
     summary: ({ amount, tokenSymbol }) =>
       `You are asking your wallet to shield ${amount} ${tokenSymbol} into the private pool.`,
     privateFact:
@@ -62,7 +60,6 @@ const actionCopy: Record<RealAction, ActionCopy> = {
   },
   "private-transfer": {
     label: "Private transfer",
-    requestLabel: "private transfer",
     summary: ({ amount, tokenSymbol, recipientLabel, recipientAddress }) =>
       `You are asking your wallet to send ${amount} ${tokenSymbol} privately to ${recipientLabel ?? recipientAddress ?? "the selected recipient"}.`,
     privateFact:
@@ -72,7 +69,6 @@ const actionCopy: Record<RealAction, ActionCopy> = {
   },
   withdraw: {
     label: "Withdraw",
-    requestLabel: "withdrawal",
     summary: ({ amount, tokenSymbol, recipientLabel, recipientAddress }) =>
       `You are asking your wallet to withdraw ${amount} ${tokenSymbol} from the private pool to ${recipientLabel ?? recipientAddress ?? "the selected recipient"}.`,
     privateFact:
@@ -87,7 +83,7 @@ const statusCopy: Record<RealActionStatus, StatusCopy> = {
     label: "Review required",
     heading: "Review this real action.",
     description:
-      "Nothing has been submitted. Check every detail before asking your wallet to prepare the action.",
+      "Nothing has been submitted. Continuing starts proof preparation and can proceed to a separate transaction approval in your wallet.",
   },
   "preparing-proof": {
     label: "Proof preparation",
@@ -271,7 +267,7 @@ export function ActionReviewPanel(props: ActionReviewPanelProps): JSX.Element {
             onClick={onConfirm}
             disabled={controlsDisabled}
           >
-            Ask wallet to prepare {actionDetails.requestLabel}
+            Continue to wallet approvals
           </button>
         ) : null}
         <button
@@ -283,8 +279,9 @@ export function ActionReviewPanel(props: ActionReviewPanelProps): JSX.Element {
           {status === "review" ? "Cancel review" : "Close panel"}
         </button>
         <p>
-          This interface never asks for private keys, viewing keys, note
-          contents, or secrets.
+          Continuing asks the wallet to prepare the proof and then request
+          submission approval. Nothing can be submitted without wallet approval,
+          and this interface never asks for your secrets.
         </p>
       </footer>
     </section>

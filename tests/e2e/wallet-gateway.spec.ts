@@ -133,4 +133,18 @@ test("explains an unregistered private balance request after explicit consent", 
   ).toBe(1);
 
   await expect(page.getByText("No transaction was started.")).toBeVisible();
+
+  await page.getByRole("textbox", { name: "Amount in STRK" }).fill("8");
+  await page.getByRole("button", { name: "Review real action" }).click();
+  await expect(
+    page.getByRole("button", { name: "Continue to wallet approvals" }),
+  ).toBeVisible();
+  await expect(
+    page.getByText("Continuing starts proof preparation", { exact: false }),
+  ).toBeVisible();
+  await expect(
+    page.getByText("Nothing can be submitted without wallet approval", {
+      exact: false,
+    }),
+  ).toBeVisible();
 });
