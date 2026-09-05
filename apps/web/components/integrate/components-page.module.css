@@ -22,16 +22,6 @@
   min-width: 0;
 }
 
-.eyebrow {
-  margin: 0 0 0.85rem;
-  color: var(--accent);
-  font-family: var(--font-mono);
-  font-size: 0.72rem;
-  font-weight: 700;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-}
-
 .hero h1,
 .sectionHeading h2,
 .adoptionIntro h2 {

@@ -11,7 +11,7 @@ describe("Components page", () => {
     expect(html).toContain("Shield");
     expect(html).toContain("Send privately");
     expect(html).toContain("Withdraw");
-    expect(html).toContain("React package · In development");
+    expect(html).toContain("React package · Workspace ready");
     expect(html).toContain("Try it in Sandbox.");
     expect(html).toContain("Add the component to an app.");
     expect(html).toContain("Connect a supported STRK20 wallet for real mode.");
@@ -20,7 +20,7 @@ describe("Components page", () => {
     expect(html).toContain('href="/documentation"');
   });
 
-  it("does not present an unpublished package API as available", () => {
+  it("does not present the workspace package as npm-published", () => {
     const html = renderToStaticMarkup(<IntegratePage />);
 
     expect(html).not.toContain("npm install");

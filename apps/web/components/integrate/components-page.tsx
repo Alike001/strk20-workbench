@@ -36,7 +36,7 @@ const adoptionSteps = [
     number: "2",
     title: "Add the component to an app.",
     description:
-      "Choose the building blocks your product needs when the reusable React package is ready.",
+      "Import the workspace React package and choose the building blocks your product needs.",
   },
   {
     number: "3",
@@ -81,7 +81,6 @@ export function ComponentsPage(): JSX.Element {
     <main className={styles.page}>
       <section className={styles.hero} aria-labelledby="components-title">
         <div className={styles.heroCopy}>
-          <p className={styles.eyebrow}>Reusable STRK20 components</p>
           <h1 id="components-title">Private transfers, ready to add.</h1>
           <p className={styles.intro}>
             Ready-made private-transfer building blocks. Try them safely in the
@@ -100,11 +99,11 @@ export function ComponentsPage(): JSX.Element {
         <aside className={styles.statusPanel} aria-label="Component kit status">
           <div className={styles.statusHeading}>
             <span>Kit status</span>
-            <strong>React package · In development</strong>
+            <strong>React package · Workspace ready</strong>
           </div>
           <p>
-            The Sandbox playground works today. The reusable package interface
-            is being finalized in parallel.
+            The reusable package and Sandbox playground work today. Supported
+            wallet execution is the next milestone.
           </p>
           <dl className={styles.productLayers}>
             <div>
@@ -128,7 +127,6 @@ export function ComponentsPage(): JSX.Element {
         aria-labelledby="kit-heading"
       >
         <div className={styles.sectionHeading}>
-          <p className={styles.eyebrow}>The private-transfer kit</p>
           <h2 id="kit-heading">Three building blocks. One private flow.</h2>
           <p>
             Start with the complete lifecycle, or choose only the action your
@@ -160,10 +158,9 @@ export function ComponentsPage(): JSX.Element {
 
       <section className={styles.adoption} aria-labelledby="adoption-heading">
         <div className={styles.adoptionIntro}>
-          <p className={styles.eyebrow}>A safe adoption path</p>
           <h2 id="adoption-heading">From playground to production.</h2>
           <p>
-            Learn the flow first. Add reusable UI when the package is ready.
+            Learn the flow first. Add reusable UI from the workspace package.
             Bring in a supported wallet only when moving to real mode.
           </p>
         </div>
