@@ -8,6 +8,7 @@ import {
   buildPoolFeePreview,
   createReviewedAction,
   displayStatus,
+  readPrivateStrkBalance,
   readPoolFee,
 } from "../components/wallet-readiness";
 import type { WalletApiAdapter } from "../lib/wallet/wallet-api-adapter";
@@ -15,6 +16,7 @@ import type { WalletApiAdapter } from "../lib/wallet/wallet-api-adapter";
 const adapter = {
   execute: vi.fn(),
   getTransactionStatus: vi.fn(),
+  readPrivateBalances: vi.fn(),
 } as unknown as WalletApiAdapter;
 
 describe("real action flow", () => {
@@ -30,11 +32,32 @@ describe("real action flow", () => {
     expect(html).toContain("Return private STRK to public");
     expect(html).toContain("Checking the official pool");
     expect(html).toContain("Enter an amount to see the expected STRK cost.");
+    expect(html).toContain("Check private STRK balance");
+    expect(html).toContain("Hidden until you ask");
     expect(html).not.toContain('value="0.01"');
     expect(html).toContain("disabled");
     expect(
       (adapter as unknown as Pick<LabAdapter, "execute">).execute,
     ).not.toHaveBeenCalled();
+    expect(adapter.readPrivateBalances).not.toHaveBeenCalled();
+  });
+
+  it("reads and formats only the requested private STRK balance", async () => {
+    const readPrivateBalances = vi.fn().mockResolvedValue([
+      {
+        token: `0x0${"4718f5a0fc34cc1af16a1cdee98ffb20c31f5cd61d6ab07201858f4287c938d"}`,
+        balance: 12_500_000_000_000_000_000n,
+      },
+    ]);
+
+    await expect(readPrivateStrkBalance({ readPrivateBalances })).resolves.toBe(
+      "12.5 STRK",
+    );
+    expect(readPrivateBalances).toHaveBeenCalledOnce();
+    expect(readPrivateBalances).toHaveBeenCalledWith(
+      ["0x04718f5a0fc34cc1af16a1cdee98ffb20c31f5cd61d6ab07201858f4287c938d"],
+      undefined,
+    );
   });
 
   it("accepts only a successful formatted pool fee response", async () => {

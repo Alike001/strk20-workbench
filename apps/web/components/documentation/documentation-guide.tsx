@@ -1,6 +1,7 @@
 import Link from "next/link";
 import type { JSX } from "react";
 
+import submission from "../../../../strk20.json";
 import { ArrowRightIcon } from "../product-shell";
 import styles from "./documentation-guide.module.css";
 
@@ -146,6 +147,12 @@ const { transaction_hash } =
 const repositoryRoot = "https://github.com/Alike001/strk20-workbench/blob/main";
 
 export function DocumentationGuide(): JSX.Element {
+  const transactionCount = submission.transactions.length;
+  const contractCount = submission.contracts.length;
+  const hasDemo = Boolean(submission.demo_url);
+  const hasDemoVideo = Boolean(submission.demo_video);
+  const evidenceComplete = transactionCount >= 3 && hasDemoVideo;
+
   return (
     <main className={styles.page}>
       <section className={styles.hero} aria-labelledby="documentation-title">
@@ -363,32 +370,38 @@ export function DocumentationGuide(): JSX.Element {
         <SectionHeading
           number="06"
           label="Current evidence"
-          title="No mainnet evidence is published yet."
-          description="The current strk20.json contains no transaction hashes, contract addresses, demo URL, or demo video. Sandbox results do not fill those fields."
+          title={
+            evidenceComplete
+              ? "Submission evidence is published."
+              : "Submission evidence is still incomplete."
+          }
+          description={`The current strk20.json lists ${transactionCount} mainnet transaction hashes, ${contractCount} contract addresses, ${hasDemo ? "a public demo URL" : "no public demo URL"}, and ${hasDemoVideo ? "a demo video" : "no demo video"}. Sandbox results do not fill mainnet evidence fields.`}
           id="evidence-title"
         />
 
         <div className={styles.evidenceStatus}>
           <div>
             <span>Repository status</span>
-            <strong>Evidence incomplete</strong>
+            <strong>
+              {evidenceComplete ? "Evidence complete" : "Evidence incomplete"}
+            </strong>
           </div>
           <dl>
             <div>
               <dt>Transactions</dt>
-              <dd>0 listed</dd>
+              <dd>{transactionCount} listed</dd>
             </div>
             <div>
               <dt>Contracts</dt>
-              <dd>0 listed</dd>
+              <dd>{contractCount} listed</dd>
             </div>
             <div>
               <dt>Public demo</dt>
-              <dd>Not listed</dd>
+              <dd>{hasDemo ? "Live" : "Not listed"}</dd>
             </div>
             <div>
               <dt>Demo video</dt>
-              <dd>Not listed</dd>
+              <dd>{hasDemoVideo ? "Listed" : "Not listed"}</dd>
             </div>
           </dl>
           <div className={styles.evidenceActions}>

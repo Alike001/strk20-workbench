@@ -15,6 +15,7 @@ export type WalletReadinessState =
 export interface WalletReadinessPanelProps {
   state: WalletReadinessState;
   walletName?: string;
+  walletVersion?: string;
   chainName?: string;
   supportedVersion?: string;
   detail?: string;
@@ -72,6 +73,7 @@ const stateCopy: Record<WalletReadinessState, StateCopy> = {
 export function WalletReadinessPanel({
   state,
   walletName,
+  walletVersion,
   chainName,
   supportedVersion,
   detail,
@@ -121,6 +123,10 @@ export function WalletReadinessPanel({
           <div className={styles.fact}>
             <dt>Wallet</dt>
             <dd>{walletName ?? "Connected wallet"}</dd>
+          </div>
+          <div className={styles.fact}>
+            <dt>Extension</dt>
+            <dd>{walletVersion ?? "Version not reported"}</dd>
           </div>
           <div className={styles.fact}>
             <dt>Network</dt>

@@ -119,15 +119,16 @@ describe("Documentation page", () => {
     expect(html).not.toContain("everything is private");
   });
 
-  it("reports the empty repository evidence state without completion claims", () => {
+  it("reports live repository evidence without completion claims", () => {
     const html = renderPage();
 
-    expect(html).toContain("No mainnet evidence is published yet.");
+    expect(html).toContain("Submission evidence is still incomplete.");
     expect(html).toContain(
-      "strk20.json contains no transaction hashes, contract addresses, demo URL, or demo video",
+      "strk20.json lists 0 mainnet transaction hashes, 0 contract addresses, a public demo URL, and no demo video",
     );
     expect(html.match(/0 listed/g)).toHaveLength(2);
-    expect(html.match(/Not listed/g)).toHaveLength(2);
+    expect(html).toContain("Live");
+    expect(html.match(/Not listed/g)).toHaveLength(1);
     expect(html).toContain("Evidence incomplete");
     expect(html).toContain('href="/evidence"');
     expect(html).not.toMatch(/production[- ]ready/i);

@@ -238,6 +238,73 @@
   line-height: 1.6;
 }
 
+.privateBalanceAccess {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 1.5rem;
+  padding: 1.25rem clamp(1.25rem, 3vw, 2rem);
+  border-bottom: 1px solid var(--border-strong);
+  background: #101010;
+}
+
+.privateBalanceAccess > div {
+  display: grid;
+  gap: 0.35rem;
+}
+
+.privateBalanceAccess span {
+  color: var(--muted-soft);
+  font: 0.68rem/1.4 var(--font-mono);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.privateBalanceAccess strong {
+  color: var(--foreground);
+  font: 700 1rem/1.4 var(--font-mono);
+}
+
+.privateBalanceAccess p,
+.privateBalanceAccess small {
+  max-width: 46rem;
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.74rem;
+  line-height: 1.5;
+}
+
+.privateBalanceAccess small {
+  color: var(--foreground);
+}
+
+.privateBalanceAccess button {
+  min-height: 2.75rem;
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-small);
+  padding: 0.7rem 1rem;
+  color: var(--foreground);
+  background: transparent;
+  font: inherit;
+  font-size: 0.78rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.privateBalanceAccess button:hover {
+  border-color: var(--accent);
+}
+
+.privateBalanceAccess button:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+}
+
+.privateBalanceAccess button:disabled {
+  cursor: wait;
+  opacity: 0.65;
+}
+
 .actionForm {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -388,7 +455,8 @@
 @media (max-width: 760px) {
   .introduction,
   .gatewayGrid,
-  .realActionHeading {
+  .realActionHeading,
+  .privateBalanceAccess {
     grid-template-columns: 1fr;
   }
 
@@ -422,7 +490,8 @@
   }
 
   .formBoundary button,
-  .recoveryAction {
+  .recoveryAction,
+  .privateBalanceAccess button {
     width: 100%;
   }
 }

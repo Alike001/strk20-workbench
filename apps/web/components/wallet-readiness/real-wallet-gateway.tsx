@@ -129,6 +129,7 @@ export function RealWalletGateway() {
           state={state}
           supportedVersion={supportedVersion}
           walletName={session?.walletName}
+          walletVersion={session?.walletVersion}
         />
 
         <div className={styles.nextStep}>

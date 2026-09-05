@@ -13,6 +13,7 @@ export {
   buildPoolFeePreview,
   createReviewedAction,
   displayStatus,
+  readPrivateStrkBalance,
   readPoolFee,
   type PoolFeePreview,
   type PoolFeeQuote,

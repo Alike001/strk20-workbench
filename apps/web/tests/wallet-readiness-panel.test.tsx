@@ -133,11 +133,13 @@ describe("WalletReadinessPanel", () => {
     const markup = render({
       state: "ready",
       walletName: "Braavos",
+      walletVersion: "2.4.1",
       chainName: "Starknet Mainnet",
       supportedVersion: "1.0.0",
     });
 
     expect(markup).toContain("Braavos");
+    expect(markup).toContain("2.4.1");
     expect(markup).toContain("Starknet Mainnet");
     expect(markup).toContain("1.0.0");
     expect(markup).toContain(

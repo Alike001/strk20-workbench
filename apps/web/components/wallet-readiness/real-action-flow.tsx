@@ -5,7 +5,7 @@ import {
   parseTokenAmount,
   type LabAction,
 } from "@strk20-workbench/lab-core";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 
 import {
   ActionReviewPanel,
@@ -17,7 +17,10 @@ import {
   type RealActionPhase,
   type RealActionState,
 } from "../../lib/wallet/real-action-controller";
-import type { WalletApiAdapter } from "../../lib/wallet/wallet-api-adapter";
+import type {
+  PrivateBalance,
+  WalletApiAdapter,
+} from "../../lib/wallet/wallet-api-adapter";
 import styles from "./real-wallet-gateway.module.css";
 
 const STRK_TOKEN =
@@ -39,6 +42,12 @@ type Draft = Readonly<{
 type PoolFeeState =
   | Readonly<{ status: "loading"; label: string }>
   | Readonly<{ status: "ready"; quote: PoolFeeQuote }>
+  | Readonly<{ status: "error"; label: string }>;
+
+type PrivateBalanceState =
+  | Readonly<{ status: "idle" }>
+  | Readonly<{ status: "requesting" }>
+  | Readonly<{ status: "ready"; label: string }>
   | Readonly<{ status: "error"; label: string }>;
 
 export type PoolFeeQuote = Readonly<{
@@ -73,6 +82,10 @@ export function RealActionFlow({
     status: "loading",
     label: "Checking the official pool…",
   });
+  const [privateBalance, setPrivateBalance] = useState<PrivateBalanceState>({
+    status: "idle",
+  });
+  const balanceRequest = useRef<AbortController | undefined>(undefined);
   const controller = useMemo(
     () => new RealActionController({ adapter, onChange: setState }),
     [adapter],
@@ -96,6 +109,39 @@ export function RealActionFlow({
       active = false;
     };
   }, [feeRefresh]);
+
+  useEffect(
+    () => () => {
+      balanceRequest.current?.abort();
+    },
+    [],
+  );
+
+  async function requestPrivateBalance() {
+    balanceRequest.current?.abort();
+    const request = new AbortController();
+    balanceRequest.current = request;
+    setPrivateBalance({ status: "requesting" });
+
+    try {
+      const label = await readPrivateStrkBalance(adapter, request.signal);
+      if (!request.signal.aborted) {
+        setPrivateBalance({ status: "ready", label });
+      }
+    } catch (error) {
+      if (!request.signal.aborted) {
+        setPrivateBalance({
+          status: "error",
+          label: balanceReadMessage(error),
+        });
+      }
+    }
+  }
+
+  function hidePrivateBalance() {
+    balanceRequest.current?.abort();
+    setPrivateBalance({ status: "idle" });
+  }
 
   function retryPoolFee() {
     setPoolFee({
@@ -147,6 +193,42 @@ export function RealActionFlow({
           private balances, discovery, and proof data.
         </p>
       </header>
+
+      <div className={styles.privateBalanceAccess}>
+        <div>
+          <span>Private STRK balance</span>
+          <strong>
+            {privateBalance.status === "ready"
+              ? privateBalance.label
+              : "Hidden until you ask"}
+          </strong>
+          <p>
+            This asks {walletName} for permission to reveal only your private
+            STRK total to this page. It never reveals your viewing key or note
+            contents, and it does not start a transaction.
+          </p>
+          {privateBalance.status === "error" ? (
+            <small role="alert">{privateBalance.label}</small>
+          ) : null}
+        </div>
+        <button
+          type="button"
+          disabled={privateBalance.status === "requesting"}
+          onClick={() =>
+            privateBalance.status === "ready"
+              ? hidePrivateBalance()
+              : void requestPrivateBalance()
+          }
+        >
+          {privateBalance.status === "requesting"
+            ? "Waiting for wallet…"
+            : privateBalance.status === "ready"
+              ? "Hide balance"
+              : privateBalance.status === "error"
+                ? "Try balance again"
+                : "Check private STRK balance"}
+        </button>
+      </div>
 
       {!showingReview ? (
         <form
@@ -315,6 +397,18 @@ export function RealActionFlow({
   );
 }
 
+export async function readPrivateStrkBalance(
+  adapter: Pick<WalletApiAdapter, "readPrivateBalances">,
+  signal?: AbortSignal,
+): Promise<string> {
+  const balances = await adapter.readPrivateBalances([STRK_TOKEN], signal);
+  const strkBalance = balances.find(isStrkBalance);
+  if (!strkBalance) {
+    throw new Error("The wallet did not return a private STRK balance.");
+  }
+  return formatTokenAmount(strkBalance.balance, STRK);
+}
+
 export async function readPoolFee(
   request: typeof fetch = fetch,
 ): Promise<PoolFeeQuote> {
@@ -416,6 +510,25 @@ function explorerUrl(transactionHash?: string): string | undefined {
   return transactionHash
     ? `https://voyager.online/tx/${transactionHash}`
     : undefined;
+}
+
+function isStrkBalance(balance: PrivateBalance): boolean {
+  try {
+    return BigInt(balance.token) === BigInt(STRK_TOKEN);
+  } catch {
+    return false;
+  }
+}
+
+function balanceReadMessage(error: unknown): string {
+  const message = error instanceof Error ? error.message : "";
+  if (/reject|refus|cancel/i.test(message)) {
+    return "Balance access was cancelled. No private balance was shared.";
+  }
+  if (/not.?registered/i.test(message)) {
+    return "This wallet is not registered with STRK20 yet. Registration happens on first use.";
+  }
+  return "The private balance could not be read. No transaction was started.";
 }
 
 function isActivePhase(phase: RealActionPhase): boolean {
