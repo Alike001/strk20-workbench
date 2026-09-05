@@ -281,6 +281,43 @@
   outline-offset: 3px;
 }
 
+.feePreview {
+  display: grid;
+  gap: 0.55rem;
+  border-top: 1px solid var(--border);
+  padding-top: 0.8rem;
+}
+
+.feePreview > div {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.feePreview span,
+.feePreview small {
+  color: var(--muted);
+  font-size: 0.72rem;
+  line-height: 1.45;
+}
+
+.feePreview strong {
+  color: var(--foreground);
+  font: 700 0.78rem/1.4 var(--font-mono);
+  text-align: right;
+}
+
+.feeWarning {
+  margin: 0;
+  border-left: 2px solid var(--accent);
+  padding: 0.7rem 0.8rem;
+  color: var(--foreground);
+  background: rgb(197 52 0 / 12%);
+  font-size: 0.74rem;
+  line-height: 1.5;
+}
+
 .recipientField {
   grid-column: 1 / -1;
 }

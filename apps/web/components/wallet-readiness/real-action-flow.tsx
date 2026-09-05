@@ -1,6 +1,10 @@
 "use client";
 
-import { parseTokenAmount, type LabAction } from "@strk20-workbench/lab-core";
+import {
+  formatTokenAmount,
+  parseTokenAmount,
+  type LabAction,
+} from "@strk20-workbench/lab-core";
 import { useEffect, useMemo, useState } from "react";
 
 import {
@@ -19,6 +23,12 @@ import styles from "./real-wallet-gateway.module.css";
 const STRK_TOKEN =
   "0x04718f5a0fc34cc1af16a1cdee98ffb20c31f5cd61d6ab07201858f4287c938d";
 const STRK_DECIMALS = 18;
+const STRK = {
+  id: STRK_TOKEN,
+  symbol: "STRK",
+  decimals: STRK_DECIMALS,
+  fictional: false,
+} as const;
 
 type Draft = Readonly<{
   action: RealAction;
@@ -28,12 +38,22 @@ type Draft = Readonly<{
 
 type PoolFeeState =
   | Readonly<{ status: "loading"; label: string }>
-  | Readonly<{ status: "ready"; label: string }>
+  | Readonly<{ status: "ready"; quote: PoolFeeQuote }>
   | Readonly<{ status: "error"; label: string }>;
+
+export type PoolFeeQuote = Readonly<{
+  amount: bigint;
+  label: string;
+}>;
+
+export type PoolFeePreview = Readonly<{
+  totalLabel: string;
+  warning?: string;
+}>;
 
 const EMPTY_DRAFT: Draft = {
   action: "shield",
-  amount: "0.01",
+  amount: "",
   recipient: "",
 };
 
@@ -61,8 +81,8 @@ export function RealActionFlow({
   useEffect(() => {
     let active = true;
     void readPoolFee()
-      .then((label) => {
-        if (active) setPoolFee({ status: "ready", label });
+      .then((quote) => {
+        if (active) setPoolFee({ status: "ready", quote });
       })
       .catch(() => {
         if (active) {
@@ -107,6 +127,10 @@ export function RealActionFlow({
 
   const showingReview = state.phase !== "idle" && reviewedDraft;
   const busy = isActivePhase(state.phase);
+  const feePreview =
+    poolFee.status === "ready"
+      ? buildPoolFeePreview(draft.amount, poolFee.quote)
+      : undefined;
 
   return (
     <section
@@ -156,13 +180,41 @@ export function RealActionFlow({
               inputMode="decimal"
               min="0"
               name="amount"
-              placeholder="0.01"
+              placeholder="Enter an amount"
               required
               value={draft.amount}
               onChange={(event) =>
                 setDraft({ ...draft, amount: event.target.value })
               }
             />
+            <div className={styles.feePreview} aria-live="polite">
+              <div>
+                <span>Live pool fee</span>
+                <strong>
+                  {poolFee.status === "ready"
+                    ? poolFee.quote.label
+                    : poolFee.label}
+                </strong>
+              </div>
+              {feePreview ? (
+                <>
+                  <div>
+                    <span>Amount + pool fee</span>
+                    <strong>{feePreview.totalLabel}</strong>
+                  </div>
+                  <small>
+                    Your wallet shows any additional charges before approval.
+                  </small>
+                </>
+              ) : (
+                <small>Enter an amount to see the expected STRK cost.</small>
+              )}
+            </div>
+            {feePreview?.warning ? (
+              <p className={styles.feeWarning} role="alert">
+                {feePreview.warning}
+              </p>
+            ) : null}
           </label>
 
           {draft.action !== "shield" ? (
@@ -197,13 +249,13 @@ export function RealActionFlow({
               <strong>No transaction starts here.</strong> You will see a final
               review before the wallet prepares anything.
             </p>
-            <button type="submit" disabled={poolFee.status !== "ready"}>
+            <button
+              type="submit"
+              disabled={poolFee.status !== "ready" || !feePreview}
+            >
               Review real action
             </button>
           </div>
-          <p className={styles.controllerMessage} role="status">
-            Current pool fee: {poolFee.label}
-          </p>
           {poolFee.status === "error" ? (
             <button
               className={styles.recoveryAction}
@@ -226,7 +278,7 @@ export function RealActionFlow({
             networkLabel="Starknet Mainnet"
             onCancel={closeOrCancel}
             onConfirm={() => void controller.confirm()}
-            poolFee={`${poolFee.label} · confirm again in your wallet`}
+            poolFee={`${poolFee.status === "ready" ? poolFee.quote.label : "Unavailable"} · confirm again in your wallet`}
             recipientAddress={reviewedDraft.recipient || undefined}
             status={displayStatus(state.phase)}
             tokenAddress={STRK_TOKEN}
@@ -265,7 +317,7 @@ export function RealActionFlow({
 
 export async function readPoolFee(
   request: typeof fetch = fetch,
-): Promise<string> {
+): Promise<PoolFeeQuote> {
   const response = await request("/api/pool-fee", {
     method: "GET",
     cache: "no-store",
@@ -276,13 +328,41 @@ export async function readPoolFee(
     throw new Error("The pool fee response is invalid.");
   }
   const feeFormatted = (payload as { feeFormatted?: unknown }).feeFormatted;
+  const feeAmount = (payload as { feeAmount?: unknown }).feeAmount;
   if (
     typeof feeFormatted !== "string" ||
-    !/^\d+(?:\.\d+)? STRK$/.test(feeFormatted)
+    !/^\d+(?:\.\d+)? STRK$/.test(feeFormatted) ||
+    typeof feeAmount !== "string" ||
+    !/^\d+$/.test(feeAmount)
   ) {
     throw new Error("The pool fee response is invalid.");
   }
-  return feeFormatted;
+  const amount = BigInt(feeAmount);
+  if (formatTokenAmount(amount, STRK) !== feeFormatted) {
+    throw new Error("The pool fee response is inconsistent.");
+  }
+  return { amount, label: feeFormatted };
+}
+
+export function buildPoolFeePreview(
+  amountInput: string,
+  fee: PoolFeeQuote,
+): PoolFeePreview | undefined {
+  let amount: bigint;
+  try {
+    amount = parseTokenAmount(amountInput, STRK_DECIMALS);
+  } catch {
+    return undefined;
+  }
+
+  return {
+    totalLabel: formatTokenAmount(amount + fee.amount, STRK),
+    ...(fee.amount > amount
+      ? {
+          warning: `The ${fee.label} pool fee is greater than your ${formatTokenAmount(amount, STRK)} amount. Review the cost before continuing.`,
+        }
+      : {}),
+  };
 }
 
 export function createReviewedAction(draft: Draft): LabAction {

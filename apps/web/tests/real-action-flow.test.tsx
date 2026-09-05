@@ -5,6 +5,7 @@ import type { LabAdapter } from "@strk20-workbench/lab-core";
 
 import {
   RealActionFlow,
+  buildPoolFeePreview,
   createReviewedAction,
   displayStatus,
   readPoolFee,
@@ -28,6 +29,8 @@ describe("real action flow", () => {
     expect(html).toContain("Send private STRK");
     expect(html).toContain("Return private STRK to public");
     expect(html).toContain("Checking the official pool");
+    expect(html).toContain("Enter an amount to see the expected STRK cost.");
+    expect(html).not.toContain('value="0.01"');
     expect(html).toContain("disabled");
     expect(
       (adapter as unknown as Pick<LabAdapter, "execute">).execute,
@@ -35,11 +38,17 @@ describe("real action flow", () => {
   });
 
   it("accepts only a successful formatted pool fee response", async () => {
-    const request = vi
-      .fn()
-      .mockResolvedValue(Response.json({ feeFormatted: "6 STRK" }));
+    const request = vi.fn().mockResolvedValue(
+      Response.json({
+        feeAmount: "6000000000000000000",
+        feeFormatted: "6 STRK",
+      }),
+    );
 
-    await expect(readPoolFee(request)).resolves.toBe("6 STRK");
+    await expect(readPoolFee(request)).resolves.toEqual({
+      amount: 6_000_000_000_000_000_000n,
+      label: "6 STRK",
+    });
     expect(request).toHaveBeenCalledWith(
       "/api/pool-fee",
       expect.objectContaining({ method: "GET", cache: "no-store" }),
@@ -47,9 +56,37 @@ describe("real action flow", () => {
 
     await expect(
       readPoolFee(
-        vi.fn().mockResolvedValue(Response.json({ feeFormatted: "unknown" })),
+        vi
+          .fn()
+          .mockResolvedValue(
+            Response.json({ feeAmount: "6", feeFormatted: "unknown" }),
+          ),
       ),
     ).rejects.toThrow(/invalid/i);
+
+    await expect(
+      readPoolFee(
+        vi
+          .fn()
+          .mockResolvedValue(
+            Response.json({ feeAmount: "6", feeFormatted: "6 STRK" }),
+          ),
+      ),
+    ).rejects.toThrow(/inconsistent/i);
+  });
+
+  it("shows the expected cost and warns when the pool fee exceeds the amount", () => {
+    const fee = { amount: 6_000_000_000_000_000_000n, label: "6 STRK" };
+
+    expect(buildPoolFeePreview("0.01", fee)).toEqual({
+      totalLabel: "6.01 STRK",
+      warning:
+        "The 6 STRK pool fee is greater than your 0.01 STRK amount. Review the cost before continuing.",
+    });
+    expect(buildPoolFeePreview("12", fee)).toEqual({
+      totalLabel: "18 STRK",
+    });
+    expect(buildPoolFeePreview("", fee)).toBeUndefined();
   });
 
   it("creates exact base-unit wallet actions from human amounts", () => {

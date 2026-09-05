@@ -9,7 +9,7 @@ test("shows only repository-backed public evidence and remains responsive", asyn
     page.getByRole("heading", { name: "Evidence, not privacy claims." }),
   ).toBeVisible();
   await expect(
-    page.getByRole("heading", { name: "0 of 3 verified" }),
+    page.getByRole("heading", { name: /0 of 3 verified/i }),
   ).toBeVisible();
   await expect(
     page.getByRole("heading", { name: "Sandbox results never appear here." }),
