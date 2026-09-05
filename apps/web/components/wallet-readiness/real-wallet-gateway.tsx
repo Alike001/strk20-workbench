@@ -21,6 +21,7 @@ import {
   WalletReadinessPanel,
   type WalletReadinessState,
 } from "./wallet-readiness-panel";
+import { RealActionFlow } from "./real-action-flow";
 import styles from "./real-wallet-gateway.module.css";
 
 const STRK_TOKEN =
@@ -36,6 +37,7 @@ export function RealWalletGateway() {
   const [session, setSession] = useState<ConnectedWalletSession>();
   const [report, setReport] = useState<CapabilityReport>();
   const [selectedWallet, setSelectedWallet] = useState<PrivacyWallet>();
+  const [adapter, setAdapter] = useState<WalletApiAdapter>();
 
   useEffect(() => {
     const discovery = createWalletDiscovery();
@@ -76,11 +78,10 @@ export function RealWalletGateway() {
         providerUrl: `${window.location.origin}/api/starknet`,
       });
       const rpcReady = await checkReceiptVerifier();
-      const capabilityReport = await createAdapter(
-        connected,
-        rpcReady,
-      ).getCapabilities();
+      const connectedAdapter = createAdapter(connected, rpcReady);
+      const capabilityReport = await connectedAdapter.getCapabilities();
       setSession(connected);
+      setAdapter(connectedAdapter);
       setReport(capabilityReport);
       setShowPicker(false);
       setState(readinessFrom(connected, capabilityReport));
@@ -200,6 +201,14 @@ export function RealWalletGateway() {
             ))}
           </ul>
         </details>
+      ) : null}
+
+      {state === "ready" && adapter && session ? (
+        <RealActionFlow
+          key={`${session.account.address}-${report?.checkedAt ?? "ready"}`}
+          adapter={adapter}
+          walletName={session.walletName}
+        />
       ) : null}
     </section>
   );

@@ -5,6 +5,7 @@ import {
   assertPositiveAmount,
   formatTokenAmount,
   parseBaseUnitAmount,
+  parseTokenAmount,
   subtractBaseUnits,
 } from "../src/index";
 
@@ -17,6 +18,14 @@ describe("base-unit amount helpers", () => {
     expect(() => parseBaseUnitAmount("1.5")).toThrow("unsigned integer");
     expect(() => parseBaseUnitAmount("01")).toThrow("unsigned integer");
     expect(() => parseBaseUnitAmount(-1n)).toThrow("cannot be negative");
+  });
+
+  it("parses human-readable token amounts without floating-point math", () => {
+    expect(parseTokenAmount("1.25", 18)).toBe(1_250_000_000_000_000_000n);
+    expect(parseTokenAmount("0.000001", 6)).toBe(1n);
+    expect(() => parseTokenAmount("0", 18)).toThrow("greater than zero");
+    expect(() => parseTokenAmount("1.0000001", 6)).toThrow("at most 6");
+    expect(() => parseTokenAmount("1e3", 18)).toThrow("valid positive");
   });
 
   it("adds, subtracts, and rejects invalid balances", () => {

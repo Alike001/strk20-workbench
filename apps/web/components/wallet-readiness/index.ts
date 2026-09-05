@@ -8,3 +8,8 @@ export {
   checkReceiptVerifier,
   readinessFrom,
 } from "./real-wallet-gateway";
+export {
+  RealActionFlow,
+  createReviewedAction,
+  displayStatus,
+} from "./real-action-flow";

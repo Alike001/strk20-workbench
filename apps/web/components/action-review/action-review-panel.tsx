@@ -13,6 +13,7 @@ export type RealActionStatus =
   | "submitted"
   | "confirming"
   | "succeeded"
+  | "cancelled"
   | "failed"
   | "uncertain";
 
@@ -113,9 +114,16 @@ const statusCopy: Record<RealActionStatus, StatusCopy> = {
       "The submitted transaction is being checked on Starknet. It is not verified yet.",
   },
   succeeded: {
-    label: "Verified success",
-    heading: "Action verified.",
-    description: "A successful transaction receipt confirms this action.",
+    label: "Receipt succeeded",
+    heading: "Starknet confirmed the transaction.",
+    description:
+      "The supplied receipt succeeded. Expected-pool interaction is verified separately before this becomes STRK20 evidence.",
+  },
+  cancelled: {
+    label: "Cancelled safely",
+    heading: "Nothing was submitted.",
+    description:
+      "This action stopped before a transaction was submitted. You can review a new action when ready.",
   },
   failed: {
     label: "Failed",

@@ -166,5 +166,18 @@ describe("RealActionController", () => {
       "0x789",
       undefined,
     );
+    expect(controller.dismiss()).toEqual({ phase: "idle" });
+  });
+
+  it("does not dismiss an uncertain submitted action", async () => {
+    const controller = new RealActionController({
+      adapter: adapter({
+        result: { status: "uncertain", transactionHash: "0x999" },
+      }),
+    });
+    controller.review(action, "transfer-uncertain");
+    await controller.confirm();
+
+    expect(() => controller.dismiss()).toThrow(/finish checking/i);
   });
 });

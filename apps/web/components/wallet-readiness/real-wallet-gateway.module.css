@@ -199,9 +199,159 @@
   color: var(--muted);
 }
 
+.realActionFlow {
+  margin-top: 1.5rem;
+  border: 1px solid var(--border-strong);
+  background: var(--surface);
+}
+
+.realActionHeading {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(18rem, 0.55fr);
+  align-items: end;
+  gap: 2rem;
+  padding: clamp(1.5rem, 4vw, 2.5rem);
+  border-bottom: 1px solid var(--border-strong);
+}
+
+.realActionHeading span {
+  color: var(--accent);
+  font: 700 0.68rem/1.2 var(--font-mono);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.realActionHeading h3 {
+  max-width: 17ch;
+  margin: 0.7rem 0 0;
+  font-family: var(--font-display);
+  font-size: clamp(2rem, 4vw, 3.5rem);
+  letter-spacing: -0.05em;
+  line-height: 0.98;
+  text-transform: uppercase;
+}
+
+.realActionHeading > p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.84rem;
+  line-height: 1.6;
+}
+
+.actionForm {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1px;
+  background: var(--border-strong);
+}
+
+.actionForm label,
+.formBoundary,
+.actionForm > p {
+  display: grid;
+  gap: 0.65rem;
+  padding: clamp(1.25rem, 3vw, 2rem);
+  background: var(--surface);
+}
+
+.actionForm label > span {
+  color: var(--muted-soft);
+  font: 0.68rem/1.4 var(--font-mono);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.actionForm input,
+.actionForm select {
+  width: 100%;
+  min-height: 3.25rem;
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-small);
+  padding: 0.75rem 0.9rem;
+  color: var(--foreground);
+  background: #0d0d0d;
+  font: 0.88rem/1.4 var(--font-mono);
+}
+
+.actionForm input:focus-visible,
+.actionForm select:focus-visible,
+.formBoundary button:focus-visible,
+.recoveryAction:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+}
+
+.recipientField {
+  grid-column: 1 / -1;
+}
+
+.recipientField small {
+  color: var(--muted);
+  font-size: 0.74rem;
+  line-height: 1.5;
+}
+
+.formBoundary {
+  grid-column: 1 / -1;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+}
+
+.formBoundary p {
+  max-width: 48rem;
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.8rem;
+  line-height: 1.55;
+}
+
+.formBoundary strong {
+  color: var(--foreground);
+}
+
+.formBoundary button,
+.recoveryAction {
+  min-height: 3rem;
+  border: 1px solid var(--accent);
+  border-radius: var(--radius-small);
+  padding: 0.75rem 1rem;
+  color: #fff;
+  background: var(--accent);
+  font: inherit;
+  font-size: 0.82rem;
+  font-weight: 750;
+  cursor: pointer;
+}
+
+.actionForm > p {
+  grid-column: 1 / -1;
+  margin: 0;
+  color: var(--foreground);
+  background: rgb(197 52 0 / 10%);
+}
+
+.actionReviewStage {
+  padding: clamp(1rem, 2vw, 1.5rem);
+}
+
+.controllerMessage {
+  margin: 1rem 0 0;
+  border-left: 2px solid var(--accent);
+  padding: 0.75rem 1rem;
+  color: var(--muted);
+  background: #101010;
+  font-size: 0.78rem;
+  line-height: 1.55;
+}
+
+.recoveryAction {
+  margin-top: 1rem;
+}
+
 @media (max-width: 760px) {
   .introduction,
-  .gatewayGrid {
+  .gatewayGrid,
+  .realActionHeading {
     grid-template-columns: 1fr;
   }
 
@@ -218,5 +368,24 @@
   .capabilities li {
     grid-template-columns: 1fr;
     gap: 0.4rem;
+  }
+
+  .actionForm {
+    grid-template-columns: 1fr;
+  }
+
+  .recipientField,
+  .formBoundary,
+  .actionForm > p {
+    grid-column: auto;
+  }
+
+  .formBoundary {
+    grid-template-columns: 1fr;
+  }
+
+  .formBoundary button,
+  .recoveryAction {
+    width: 100%;
   }
 }

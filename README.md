@@ -13,7 +13,7 @@ STRK20 supplies the privacy protocol. Application developers still need understa
 
 ## Project status
 
-The guided Sandbox, Lab Core engine, reusable React package, and independent Vite consumer are implemented. The real-wallet path is the next major milestone. The accepted research, product requirements, architecture, and build contract live in [`context/`](./context/README.md).
+The guided Sandbox, Lab Core engine, reusable React package, independent Vite consumer, passive wallet discovery, mainnet capability gate, and reviewed real-action flow are implemented. A real action stays locked until a compatible STRK20 wallet, Starknet Mainnet, the reviewed pool configuration, and receipt verification are all available. The next release gate is verified mainnet execution and public evidence. The accepted research, product requirements, architecture, and build contract live in [`context/`](./context/README.md).
 
 The first release is planned as a lightweight pnpm workspace containing:
 

@@ -128,6 +128,23 @@ describe("WalletApiAdapter action mapping", () => {
     expect(
       mapLabActionToStrk20(
         {
+          type: "private-transfer",
+          from: "alice",
+          to: "0xcafe",
+          token: { id: TOKEN },
+          amount: 3n,
+        },
+        snapshot(),
+      ),
+    ).toEqual({
+      type: "transfer",
+      token: TOKEN,
+      amount: "3",
+      recipient: "0xcafe",
+    });
+    expect(
+      mapLabActionToStrk20(
+        {
           type: "withdraw",
           actorId: "alice",
           recipient: ALICE,

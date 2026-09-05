@@ -13,6 +13,23 @@ export function parseBaseUnitAmount(value: string | bigint): bigint {
   return BigInt(value);
 }
 
+export function parseTokenAmount(value: string, decimals: number): bigint {
+  if (!Number.isInteger(decimals) || decimals < 0) {
+    throw new TypeError("Token decimals must be a non-negative integer.");
+  }
+  const match = /^(0|[1-9]\d*)(?:\.(\d+))?$/.exec(value.trim());
+  if (!match) throw new TypeError("Enter a valid positive token amount.");
+  const fraction = match[2] ?? "";
+  if (fraction.length > decimals) {
+    throw new RangeError(`This token supports at most ${decimals} decimals.`);
+  }
+  const whole = BigInt(match[1] ?? "0") * 10n ** BigInt(decimals);
+  const fractional = fraction ? BigInt(fraction.padEnd(decimals, "0")) : 0n;
+  const amount = whole + fractional;
+  assertPositiveAmount(amount);
+  return amount;
+}
+
 export function assertPositiveAmount(amount: bigint): void {
   if (amount <= 0n)
     throw new RangeError("Action amounts must be greater than zero.");

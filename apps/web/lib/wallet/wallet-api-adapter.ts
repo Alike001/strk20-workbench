@@ -517,7 +517,7 @@ export function mapLabActionToStrk20(
       recipient: requireAddress(action.recipient, "withdrawal recipient"),
     };
   }
-  const recipient = snapshot.actors[action.to]?.address;
+  const recipient = snapshot.actors[action.to]?.address ?? action.to;
   return {
     type: "transfer",
     token,

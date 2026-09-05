@@ -57,8 +57,13 @@ const statuses: ReadonlyArray<readonly [RealActionStatus, string, string]> = [
   ],
   [
     "succeeded",
-    "Action verified.",
-    "A successful transaction receipt confirms this action.",
+    "Starknet confirmed the transaction.",
+    "Expected-pool interaction is verified separately",
+  ],
+  [
+    "cancelled",
+    "Nothing was submitted.",
+    "This action stopped before a transaction was submitted.",
   ],
   [
     "failed",
@@ -135,9 +140,7 @@ describe("ActionReviewPanel", () => {
       expect(html).toContain(description);
       expect(html).toContain('aria-live="');
 
-      if (status !== "succeeded") {
-        expect(html).not.toContain("Verified success");
-      }
+      expect(html).not.toContain("Verified STRK20 evidence");
     },
   );
 

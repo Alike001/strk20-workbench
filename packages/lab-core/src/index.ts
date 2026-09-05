@@ -3,6 +3,7 @@ export {
   assertPositiveAmount,
   formatTokenAmount,
   parseBaseUnitAmount,
+  parseTokenAmount,
   subtractBaseUnits,
 } from "./amounts";
 export {

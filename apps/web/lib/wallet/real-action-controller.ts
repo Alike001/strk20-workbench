@@ -75,6 +75,15 @@ export class RealActionController {
     });
   }
 
+  dismiss(): RealActionState {
+    if (isBusy(this.#state.phase) || this.#state.phase === "uncertain") {
+      throw new Error(
+        "Finish checking the submitted action before closing this flow.",
+      );
+    }
+    return this.#set({ phase: "idle" });
+  }
+
   confirm(signal?: AbortSignal): Promise<RealActionState> {
     if (this.#inFlight) return this.#inFlight;
     if (
