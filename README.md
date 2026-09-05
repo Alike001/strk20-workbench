@@ -4,6 +4,8 @@ Add private transfers to a Starknet app with reusable building blocks and a safe
 
 STRK20 Workbench is an open-source STRK20 component kit in active development. Builders can first try Shield, Send privately, and Withdraw with fake tokens in the lightweight browser Sandbox, understand what observers can and cannot see, and then use the same React building blocks in their own application. Lab Core is the framework-neutral engine underneath the interface.
 
+**Live product:** [strk20-workbench.vercel.app](https://strk20-workbench.vercel.app)
+
 ## Why it exists
 
 STRK20 supplies the privacy protocol. Application developers still need understandable, reusable product parts for coordinating wallets, the privacy pool, discovery, proving, and anonymizer behavior. STRK20 Workbench packages those moving parts into one lightweight workflow with two honestly separated modes:
@@ -13,7 +15,7 @@ STRK20 supplies the privacy protocol. Application developers still need understa
 
 ## Project status
 
-The guided Sandbox, Lab Core engine, reusable React package, independent Vite consumer, passive wallet discovery, mainnet capability gate, reviewed real-action flow, and public evidence verifier are implemented. A real action stays locked until a compatible STRK20 wallet, Starknet Mainnet, the reviewed pool configuration, and receipt verification are all available. Checked-in hashes qualify only after a final receipt and an event from the reviewed pool are independently verified. The next release gate is deliberate minimal-value mainnet execution. The accepted research, product requirements, architecture, and build contract live in [`context/`](./context/README.md).
+The guided Sandbox, Lab Core engine, reusable React package, independent Vite consumer, passive wallet discovery, mainnet capability gate, reviewed real-action flow, public evidence verifier, and anonymous production deployment are implemented. A real action stays locked until a compatible STRK20 wallet, Starknet Mainnet, the reviewed pool configuration, and receipt verification are all available. Checked-in hashes qualify only after a final receipt and an event from the reviewed pool are independently verified. The next release gate is deliberate minimal-value mainnet execution. The accepted research, product requirements, architecture, and build contract live in [`context/`](./context/README.md).
 
 The first release is planned as a lightweight pnpm workspace containing:
 
