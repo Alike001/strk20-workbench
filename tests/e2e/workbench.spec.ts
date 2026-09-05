@@ -9,37 +9,35 @@ test("canonical flow, persistence, custom amounts, failure recovery, and respons
   });
   await page.evaluate(() => localStorage.clear());
   await page.reload();
-  await expect(page.getByLabel("Current workbench environment")).toBeAttached();
   await expect(
-    page.getByRole("button", { name: "Run next step" }),
+    page.getByText("Sandbox · No wallet · No real funds"),
+  ).toBeVisible();
+  await expect(
+    page.getByRole("button", { name: "Shield 50 tokens" }),
   ).toBeEnabled();
   await page.screenshot({
     path: "/tmp/strk20-workbench-initial.png",
     fullPage: true,
   });
 
-  await page.getByRole("button", { name: "Run next step" }).click();
+  await page.getByRole("button", { name: "Shield 50 tokens" }).click();
+  await expect(
+    page.getByRole("button", { name: "Send 20 tokens privately" }),
+  ).toBeVisible();
   await expect(
     page.getByRole("article").filter({ hasText: "Alice" }),
-  ).toContainText("Registered");
+  ).toContainText("50");
+  await page.getByRole("button", { name: "Send 20 tokens privately" }).click();
   await expect(
-    page.getByRole("article").filter({ hasText: "Bob" }),
-  ).toContainText("Registered");
-  await page.getByRole("button", { name: "Run next step" }).click();
+    page.getByRole("button", { name: "Withdraw 10 tokens" }),
+  ).toBeVisible();
+  await page.getByRole("button", { name: "Withdraw 10 tokens" }).click();
   await expect(
-    page.getByRole("article").filter({ hasText: "Alice" }),
-  ).toContainText(/50\s*LAB/);
-  await page.getByRole("button", { name: "Run next step" }).click();
-  await expect(
-    page.getByRole("article").filter({ hasText: "Bob" }),
-  ).toContainText(/20\s*LAB/);
-  await page.getByRole("button", { name: "Run next step" }).click();
-  await expect(
-    page.getByRole("button", { name: "Scenario complete" }),
+    page.getByRole("heading", { name: "Alice paid Bob privately." }),
   ).toBeVisible();
   await expect(
     page.getByRole("article").filter({ hasText: "Bob" }),
-  ).toContainText(/10\s*LAB/);
+  ).toContainText("10");
   await page.evaluate(() => window.scrollTo(0, 0));
   await page.screenshot({
     path: "/tmp/strk20-workbench-complete.png",
@@ -47,41 +45,42 @@ test("canonical flow, persistence, custom amounts, failure recovery, and respons
   });
 
   await page.reload();
-  await expect(
-    page.getByRole("button", { name: "Scenario complete" }),
-  ).toBeVisible();
+  await expect(page.getByRole("button", { name: "Start again" })).toBeVisible();
   const persisted = await page.evaluate(() =>
     localStorage.getItem("strk20-workbench:sandbox:v1"),
   );
   expect(persisted).not.toContain("walletSession");
 
   page.once("dialog", (dialog) => dialog.accept());
-  await page.getByRole("button", { name: "Reset Sandbox" }).click();
+  await page.getByRole("button", { name: "Start again" }).click();
   await page.getByLabel("shield amount").fill("40");
+  await page.getByRole("button", { name: "Shield 40 tokens" }).click();
   await page.getByLabel("transfer amount").fill("15");
+  await page.getByRole("button", { name: "Send 15 tokens privately" }).click();
   await page.getByLabel("withdraw amount").fill("5");
-  await page.getByRole("button", { name: "Run all" }).click();
+  await page.getByRole("button", { name: "Withdraw 5 tokens" }).click();
   await expect(
     page.getByRole("article").filter({ hasText: "Alice" }),
-  ).toContainText(/60\s*LAB/);
+  ).toContainText("60");
   await expect(
     page.getByRole("article").filter({ hasText: "Alice" }),
-  ).toContainText(/25\s*LAB/);
+  ).toContainText("25");
   await expect(
     page.getByRole("article").filter({ hasText: "Bob" }),
-  ).toContainText(/5\s*LAB/);
+  ).toContainText("5");
 
   page.once("dialog", (dialog) => dialog.accept());
-  await page.getByRole("button", { name: "Reset Sandbox" }).click();
+  await page.getByRole("button", { name: "Start again" }).click();
+  await page.getByText("Developer details", { exact: true }).click();
   await page.getByText("Test recovery").click();
-  await page.getByRole("button", { name: "Run next step" }).click();
+  await page.getByRole("button", { name: "Shield 50 tokens" }).click();
   await expect(
     page.getByRole("heading", { name: "Proof service unavailable" }),
   ).toBeVisible();
   await page.getByRole("button", { name: "Retry safely" }).click();
   await expect(
-    page.getByRole("article").filter({ hasText: "Alice" }),
-  ).toContainText("Registered");
+    page.getByRole("button", { name: "Send 20 tokens privately" }),
+  ).toBeVisible();
 
   const desktopOverflow = await page.evaluate(
     () =>

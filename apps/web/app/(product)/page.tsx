@@ -2,9 +2,9 @@ import Link from "next/link";
 
 import {
   ArrowRightIcon,
-  PrivacyScenario,
+  BuildingBlocks,
+  LandingTransferPreview,
   ProductFrame,
-  ProductMap,
 } from "../../components/product-shell";
 import styles from "../../components/product-shell/product-shell.module.css";
 
@@ -14,47 +14,26 @@ export default function IntroductionPage() {
       <main className={styles.introduction}>
         <section className={styles.hero}>
           <div className={styles.heroCopy}>
-            <h1>Build private Starknet apps without the heavy setup.</h1>
+            <h1>Add private transfers to your Starknet app.</h1>
             <p>
-              Run a complete STRK20 flow in your browser, inspect what the chain
-              can see, then move the same integration to a supported wallet on
-              mainnet.
+              Try shielding, private transfers and withdrawals in a safe
+              playground. Then copy the components into your app and connect
+              STRK20.
             </p>
             <div className={styles.heroActions}>
               <Link className={styles.primaryAction} href="/workbench">
-                Run a private transfer <ArrowRightIcon />
+                Try the playground <ArrowRightIcon />
               </Link>
               <Link className={styles.secondaryAction} href="/integrate">
-                Connect your project <ArrowRightIcon />
+                Explore components <ArrowRightIcon />
               </Link>
             </div>
-            <dl
-              className={styles.statusReadout}
-              aria-label="Current workbench status"
-            >
-              <div>
-                <dt>mode</dt>
-                <dd>sandbox</dd>
-              </div>
-              <div>
-                <dt>proof</dt>
-                <dd>simulated</dd>
-              </div>
-              <div>
-                <dt>wallet</dt>
-                <dd>not connected</dd>
-              </div>
-              <div>
-                <dt>privacy actions</dt>
-                <dd>disabled</dd>
-              </div>
-            </dl>
           </div>
 
-          <PrivacyScenario />
+          <LandingTransferPreview />
         </section>
 
-        <ProductMap />
+        <BuildingBlocks />
       </main>
     </ProductFrame>
   );

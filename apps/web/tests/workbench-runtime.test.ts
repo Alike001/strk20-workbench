@@ -52,6 +52,18 @@ describe("SandboxWorkbenchRuntime", () => {
     expect(runtime.getStage()).toBe("private-transfer");
   });
 
+  it("hides actor registration inside the first friendly Shield step", async () => {
+    const runtime = new SandboxWorkbenchRuntime();
+    const result = await runtime.runGuidedStep(DEFAULT_SCENARIO_AMOUNTS);
+    expect(result?.outcome).toBe("succeeded");
+    expect(runtime.getStage()).toBe("private-transfer");
+    expect(runtime.getState().actors.alice?.registered).toBe(true);
+    expect(runtime.getState().actors.bob?.registered).toBe(true);
+    expect(runtime.getState().actors.alice?.privateBalances["lab-token"]).toBe(
+      50n,
+    );
+  });
+
   it("returns nothing after completion or before any retryable attempt", async () => {
     const runtime = new SandboxWorkbenchRuntime();
     expect(await runtime.retry()).toBeUndefined();

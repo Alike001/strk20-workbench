@@ -1,24 +1,25 @@
 # STRK20 Workbench
 
-Build and debug private Starknet applications without running heavy infrastructure on your laptop.
+Add private transfers to a Starknet app with reusable building blocks and a safe visual playground.
 
-STRK20 Workbench is an open-source developer product for learning, testing, and integrating STRK20 workflows. Its visual sandbox will let builders run registration, shielding, private transfer, and withdrawal scenarios; inspect what is public and private; diagnose failures; and graduate the same workflow to a supported wallet on Starknet mainnet.
+STRK20 Workbench is an open-source STRK20 component kit in active development. Builders can first try Shield, Send privately, and Withdraw with fake tokens in the lightweight browser Sandbox, understand what observers can and cannot see, and then use the same building blocks in their own application. Lab Core is the framework-neutral engine underneath the interface.
 
 ## Why it exists
 
-STRK20 supplies the privacy protocol. Application developers still need a clear way to coordinate wallets, the privacy pool, discovery, proving, and anonymizer behavior. STRK20 Workbench packages those moving parts into one lightweight workflow with two honestly separated modes:
+STRK20 supplies the privacy protocol. Application developers still need understandable, reusable product parts for coordinating wallets, the privacy pool, discovery, proving, and anonymizer behavior. STRK20 Workbench packages those moving parts into one lightweight workflow with two honestly separated modes:
 
 - **Sandbox:** fast, deterministic, and explicitly simulated. No wallet, funds, Docker, or local prover required.
 - **Real network:** genuine STRK20 operations through a supported privacy wallet, with explorer-verifiable evidence.
 
 ## Project status
 
-The product is at the implementation-start stage. The accepted research, product requirements, architecture, and build contract live in [`context/`](./context/README.md).
+The guided Sandbox and Lab Core engine are implemented. The reusable React component package and real-wallet path are the next milestones. The accepted research, product requirements, architecture, and build contract live in [`context/`](./context/README.md).
 
 The first release is planned as a lightweight pnpm workspace containing:
 
-- a hosted Next.js visual workbench;
+- a hosted Next.js component playground;
 - a framework-neutral TypeScript scenario package;
+- reusable React components for the private-transfer lifecycle;
 - a small independent example consumer;
 - a supported Wallet API path to real STRK20 mainnet activity.
 

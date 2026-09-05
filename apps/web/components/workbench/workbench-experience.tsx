@@ -1,7 +1,6 @@
 "use client";
 
 import {
-  getBalance,
   parseBaseUnitAmount,
   type LabAction,
   type ScenarioState,
@@ -13,28 +12,20 @@ import {
   DEFAULT_SCENARIO_AMOUNTS,
   SandboxWorkbenchRuntime,
   getGuidedStage,
-  type GuidedStage,
   type ScenarioAmounts,
 } from "../../lib/workbench/runtime";
 import {
   createWorkbenchStore,
   rehydrateWorkbenchStore,
 } from "../../lib/workbench/store";
-import { ActorCard } from "../actor-card";
 import { EnvironmentStatus } from "../environment-status";
 import { AdvancedDetails } from "./advanced-details";
 import { ErrorRecoveryPanel } from "./error-recovery-panel";
+import { GuidedAction } from "./guided-action";
+import { GuidedProgress, type PlaygroundStage } from "./guided-progress";
 import { PrivacyXRay } from "./privacy-xray";
-import { ScenarioSteps, type ScenarioStepView } from "./scenario-steps";
 import { TransactionTimeline } from "./transaction-timeline";
 import styles from "./workbench.module.css";
-
-const stageOrder: readonly Exclude<GuidedStage, "complete">[] = [
-  "register",
-  "shield",
-  "private-transfer",
-  "withdraw",
-];
 
 export function WorkbenchExperience() {
   const [store] = useState(() => createWorkbenchStore());
@@ -66,7 +57,9 @@ export function WorkbenchExperience() {
   }, [store]);
 
   const stage = getGuidedStage(scenario);
-  const selectedAction = actionForSelection(scenario, selectedStepId);
+  const playgroundStage: PlaygroundStage =
+    stage === "register" ? "shield" : stage;
+  const visibleAction = actionForStage(playgroundStage);
 
   async function run(mode: "next" | "all") {
     if (!hydrated || busy) return;
@@ -86,7 +79,10 @@ export function WorkbenchExperience() {
       if (mode === "all") {
         await runtime.runAll(parsed.amounts, { failNext, onState: update });
       } else {
-        await runtime.runNext(parsed.amounts, { failNext, onState: update });
+        await runtime.runGuidedStep(parsed.amounts, {
+          failNext,
+          onState: update,
+        });
       }
       setFailNext(false);
     } finally {
@@ -110,7 +106,7 @@ export function WorkbenchExperience() {
   function reset() {
     if (
       !window.confirm(
-        "Reset the fictional Sandbox scenario? Wallet and real-network session data will not be changed.",
+        "Start the Sandbox example again? No wallet or real funds will be changed.",
       )
     ) {
       return;
@@ -126,34 +122,6 @@ export function WorkbenchExperience() {
 
   return (
     <div className={styles.experience}>
-      <EnvironmentStatus
-        ariaLabel="Current workbench environment"
-        items={[
-          {
-            label: "Execution",
-            value: "Sandbox",
-            detail: "Fictional LAB only",
-            tone: "ready",
-          },
-          {
-            label: "Proof",
-            value: "Simulated",
-            detail: "Not mainnet evidence",
-            tone: "warning",
-          },
-          {
-            label: "Network",
-            value: "Local simulation",
-            tone: "inactive",
-          },
-          {
-            label: "State",
-            value: hydrated ? "Ready" : "Restoring safely",
-            tone: hydrated ? "ready" : "pending",
-          },
-        ]}
-      />
-
       {formError ? (
         <p className={styles.formError} role="alert">
           {formError}
@@ -165,107 +133,93 @@ export function WorkbenchExperience() {
         onRetry={retry}
       />
 
-      <div className={styles.workspace}>
-        <ScenarioSteps
-          amounts={amounts}
-          busy={busy || !hydrated}
-          complete={stage === "complete"}
-          failNext={failNext}
-          onAmountChange={(field, value) =>
-            setAmounts((current) => ({ ...current, [field]: value }))
-          }
-          onFailNextChange={setFailNext}
-          onReset={reset}
-          onRunAll={() => void run("all")}
-          onRunStep={() => void run("next")}
-          steps={stepViews(stage)}
-        />
-
-        <div className={styles.centerColumn}>
-          <section
-            className={styles.actorGrid}
-            aria-label="Scenario actors and balances"
-          >
-            <ActorCard
-              active={stage !== "withdraw"}
-              address={scenario.actors.alice?.address ?? "Unknown"}
-              compact
-              name="Alice"
-              privateBalance={{
-                amount: getBalance(
-                  scenario,
-                  "alice",
-                  "lab-token",
-                  "private",
-                ).toString(),
-                symbol: "LAB",
-              }}
-              publicBalance={{
-                amount: getBalance(
-                  scenario,
-                  "alice",
-                  "lab-token",
-                  "public",
-                ).toString(),
-                symbol: "LAB",
-              }}
-              registration={
-                scenario.actors.alice?.registered
-                  ? "registered"
-                  : "not-registered"
-              }
-            />
-            <span className={styles.actorFlow} aria-hidden="true">
-              private flow →
-            </span>
-            <ActorCard
-              active={stage === "withdraw"}
-              address={scenario.actors.bob?.address ?? "Unknown"}
-              compact
-              name="Bob"
-              privateBalance={{
-                amount: getBalance(
-                  scenario,
-                  "bob",
-                  "lab-token",
-                  "private",
-                ).toString(),
-                symbol: "LAB",
-              }}
-              publicBalance={{
-                amount: getBalance(
-                  scenario,
-                  "bob",
-                  "lab-token",
-                  "public",
-                ).toString(),
-                symbol: "LAB",
-              }}
-              registration={
-                scenario.actors.bob?.registered
-                  ? "registered"
-                  : "not-registered"
-              }
-            />
-          </section>
-          <TransactionTimeline
-            events={scenario.timeline}
-            onSelectStep={(stepId) =>
-              store.getState().setSelectedStepId(stepId)
-            }
-            selectedStepId={selectedStepId}
-            steps={scenario.steps}
-          />
-        </div>
-
-        <PrivacyXRay action={selectedAction} />
-      </div>
-
-      <AdvancedDetails
-        onOpenChange={(open) => store.getState().setAdvancedDetails(open)}
-        open={advancedDetails}
-        state={scenario}
+      <GuidedProgress stage={playgroundStage} />
+      <GuidedAction
+        amounts={amounts}
+        busy={busy}
+        hydrated={hydrated}
+        onAmountChange={(field, value) =>
+          setAmounts((current) => ({ ...current, [field]: value }))
+        }
+        onReset={reset}
+        onRunAll={() => void run("all")}
+        onRunStep={() => void run("next")}
+        scenario={scenario}
+        stage={playgroundStage}
       />
+      <PrivacyXRay
+        action={visibleAction}
+        amount={amountForAction(visibleAction, amounts)}
+      />
+
+      <details
+        className={styles.developerPanel}
+        onToggle={(event) =>
+          store.getState().setAdvancedDetails(event.currentTarget.open)
+        }
+        open={advancedDetails}
+      >
+        <summary>Developer details</summary>
+        <div className={styles.developerIntro}>
+          <div>
+            <h2>Inspect the Sandbox</h2>
+            <p>
+              These details help developers test state, recovery and simulated
+              events. They are not mainnet evidence.
+            </p>
+          </div>
+          <label className={styles.failureToggle}>
+            <input
+              checked={failNext}
+              disabled={busy || playgroundStage === "complete"}
+              onChange={(event) => setFailNext(event.target.checked)}
+              type="checkbox"
+            />
+            <span>
+              <strong>Test recovery</strong>
+              <small>Make the next simulated proof fail once.</small>
+            </span>
+          </label>
+        </div>
+        <EnvironmentStatus
+          ariaLabel="Current workbench environment"
+          items={[
+            {
+              label: "Execution",
+              value: "Sandbox",
+              detail: "Fictional tokens only",
+              tone: "ready",
+            },
+            {
+              label: "Proof",
+              value: "Simulated",
+              detail: "Not mainnet evidence",
+              tone: "warning",
+            },
+            {
+              label: "Network",
+              value: "Local simulation",
+              tone: "inactive",
+            },
+            {
+              label: "State",
+              value: hydrated ? "Ready" : "Restoring safely",
+              tone: hydrated ? "ready" : "pending",
+            },
+          ]}
+        />
+        <TransactionTimeline
+          events={scenario.timeline}
+          onSelectStep={(stepId) => store.getState().setSelectedStepId(stepId)}
+          selectedStepId={selectedStepId}
+          steps={scenario.steps}
+        />
+        <AdvancedDetails
+          onOpenChange={() => undefined}
+          open={false}
+          state={scenario}
+        />
+      </details>
     </div>
   );
 }
@@ -301,45 +255,29 @@ function parseAmounts(
     ) {
       return {
         success: false,
-        message: "Every scenario amount must be greater than zero.",
+        message: "Every amount must be greater than zero.",
       };
     }
     return { success: true, amounts: parsed };
   } catch {
     return {
       success: false,
-      message: "Use whole, positive LAB base-unit amounts only.",
+      message: "Use whole, positive token amounts only.",
     };
   }
 }
 
-function stepViews(stage: GuidedStage): readonly ScenarioStepView[] {
-  const current =
-    stage === "complete" ? stageOrder.length : stageOrder.indexOf(stage);
-  const descriptions = [
-    "Open private channels for Alice and Bob.",
-    "Move Alice’s public LAB into a shielded balance.",
-    "Move private LAB from Alice to Bob.",
-    "Return part of Bob’s balance to public state.",
-  ];
-  return stageOrder.map((item, index) => ({
-    label:
-      item === "private-transfer"
-        ? "Private transfer"
-        : `${item[0]?.toUpperCase()}${item.slice(1)}`,
-    description: descriptions[index]!,
-    status:
-      index < current ? "complete" : index === current ? "ready" : "waiting",
-  }));
+function actionForStage(stage: PlaygroundStage): LabAction["type"] {
+  if (stage === "shield") return "shield";
+  if (stage === "private-transfer") return "private-transfer";
+  return "withdraw";
 }
 
-function actionForSelection(
-  state: ScenarioState,
-  selectedStepId?: string,
-): LabAction["type"] {
-  return (
-    state.steps.find((step) => step.id === selectedStepId)?.action.type ??
-    state.steps.at(-1)?.action.type ??
-    "private-transfer"
-  );
+function amountForAction(
+  action: LabAction["type"],
+  amounts: Readonly<{ shield: string; transfer: string; withdraw: string }>,
+): string {
+  if (action === "shield") return amounts.shield;
+  if (action === "withdraw") return amounts.withdraw;
+  return amounts.transfer;
 }

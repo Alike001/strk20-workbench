@@ -88,7 +88,7 @@ export class SandboxWorkbenchRuntime {
     let latest: ControllerResult | undefined;
     let shouldFail = options.failNext;
     while (this.getStage() !== "complete") {
-      latest = await this.runNext(amounts, {
+      latest = await this.runGuidedStep(amounts, {
         failNext: shouldFail,
         onState: options.onState,
       });
@@ -96,6 +96,21 @@ export class SandboxWorkbenchRuntime {
       if (!latest || latest.outcome !== "succeeded") break;
     }
     return latest;
+  }
+
+  async runGuidedStep(
+    amounts: ScenarioAmounts,
+    options: GuidedRunOptions = {},
+  ): Promise<ControllerResult | undefined> {
+    if (this.getStage() === "register") {
+      const registration = await this.runNext(amounts, {
+        onState: options.onState,
+      });
+      if (!registration || registration.outcome !== "succeeded") {
+        return registration;
+      }
+    }
+    return this.runNext(amounts, options);
   }
 
   async retry(

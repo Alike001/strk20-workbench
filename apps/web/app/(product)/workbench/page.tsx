@@ -1,5 +1,6 @@
-import { ProductFrame, RouteShell } from "../../../components/product-shell";
+import { ProductFrame } from "../../../components/product-shell";
 import { WorkbenchExperience } from "../../../components/workbench";
+import styles from "../../../components/workbench/workbench.module.css";
 
 export const metadata = {
   title: "Workbench · STRK20 Workbench",
@@ -10,14 +11,19 @@ export const metadata = {
 export default function WorkbenchPage() {
   return (
     <ProductFrame active="Workbench">
-      <RouteShell
-        compact
-        title="Run the private-token lifecycle."
-        description="Start with a wallet-free scenario. Each action will update the same balances, timeline, and privacy explanation."
-        state="Sandbox · Simulated proof"
-      >
+      <main className={styles.playgroundPage}>
+        <header className={styles.playgroundHeading}>
+          <div>
+            <h1>Try a private transfer.</h1>
+            <p>
+              Use fake tokens to see how money moves from public to private and
+              back again.
+            </p>
+          </div>
+          <p>Sandbox · No wallet · No real funds</p>
+        </header>
         <WorkbenchExperience />
-      </RouteShell>
+      </main>
     </ProductFrame>
   );
 }

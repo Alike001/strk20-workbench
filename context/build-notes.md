@@ -86,3 +86,13 @@
 - Playwright was used because no separate in-app Browser tool was available. Desktop 1536×1024 and mobile 390×844 renders were inspected against the concept; the headline wrap and canvas alignment were corrected, all five routes loaded, and the mobile document width matched the viewport.
 - Teammate issue `#3` gives `Webghost01-NG` a reusable `EnvironmentStatus` component in four isolated files. It prohibits edits to pages, global styles, wallet code, dependencies, and architecture so parallel work remains merge-safe.
 - Review pause 1 remains open for the participant's thirty-second comprehension and visual-direction check.
+
+## 2026-09-05 — Component-kit product refinement
+
+- The participant clarified that the infrastructure itself is the exciting product, but the frontend must make that infrastructure understandable to technical and non-technical visitors within thirty seconds.
+- The refined thesis is: **ready-made STRK20 private-transfer building blocks, with a safe playground where builders can try them before adding them to an app**.
+- The CDR Kit influence remains product structure and developer clarity—not copied visuals. The playground is the showroom, reusable components are the product, and Lab Core is the engine underneath.
+- The official STRK20 near-black, raised graphite, white, and single orange accent palette is now used. Protocol color creates immediate ecosystem recognition while the information hierarchy stays simpler and friendlier than the upstream documentation.
+- Three accepted visual references live in `context/design/`: landing, building blocks, and guided playground. The implementation was compared at 1536×1024 and 390×844 using Playwright with system Chrome because the in-app browser was unavailable.
+- Registration is now automatic first-use setup in the guided Sandbox rather than a visible fourth product step. Protocol events, failure injection, and advanced evidence remain available under **Developer details**.
+- The homepage does not claim that `@strk20-workbench/react` is already shipped: its code preview is explicitly labelled **Planned React API**, and package delivery is the next checklist milestone.
