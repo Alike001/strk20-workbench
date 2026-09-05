@@ -155,3 +155,10 @@ The Workbench includes both an in-browser sandbox and an eventual mainnet wallet
 - Do **not** commit `.env` or `.env.local` files containing real RPC API keys or private keys.
 - Copy `.env.example` to `apps/web/.env.local` when configuring the Next.js application.
 - Never store or accept private keys, viewing keys, or seed phrases.
+
+The browser calls the same-origin `/api/starknet` route for read-only network
+verification. That route keeps `STARKNET_RPC_URL` server-side and allows only
+chain ID, block number, transaction status, and transaction receipt methods. It
+does not expose a general-purpose RPC relay or submit transactions. Wallet
+signing, STRK20 note discovery, proving, and submission remain inside the
+connected privacy-enabled wallet.

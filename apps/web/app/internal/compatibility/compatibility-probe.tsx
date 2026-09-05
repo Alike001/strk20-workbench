@@ -1,9 +1,12 @@
 "use client";
 
-import { createStore, type Store } from "@starknet-io/get-starknet-discovery";
 import type { WalletWithStarknetFeatures } from "@starknet-io/get-starknet-wallet-standard/features";
-import { WalletAccountV6, walletV6 } from "starknet";
 import { useEffect, useRef, useState } from "react";
+
+import {
+  connectPrivacyWallet,
+  createWalletDiscovery,
+} from "../../../lib/wallet/wallet-session";
 
 import {
   buildCapabilityReport,
@@ -40,14 +43,14 @@ export function CompatibilityProbe() {
     setHasScanned(true);
     unsubscribeRef.current?.();
 
-    const store: Store = createStore({ eip1193Adapters: [] });
+    const discovery = createWalletDiscovery();
     const update = (nextWallets: readonly WalletWithStarknetFeatures[]) => {
       setWallets([...nextWallets]);
       setState("idle");
     };
 
-    update(store.getWallets());
-    unsubscribeRef.current = store.subscribe(update);
+    update(discovery.getWallets());
+    unsubscribeRef.current = discovery.subscribe(update);
   }
 
   async function connect(wallet: WalletWithStarknetFeatures) {
@@ -57,24 +60,19 @@ export function CompatibilityProbe() {
 
     try {
       const origin = window.location.origin;
-      const account = await WalletAccountV6.connect(
-        { nodeUrl: `${origin}/api/starknet` },
+      const session = await connectPrivacyWallet({
+        providerUrl: `${origin}/api/starknet`,
         wallet,
-      );
-      const [chainId, walletApiVersions, rpcSpecVersions] = await Promise.all([
-        walletV6.requestChainId(wallet),
-        walletV6.supportedWalletApi(wallet),
-        walletV6.supportedSpecs(wallet),
-      ]);
+      });
 
       setReport(
         buildCapabilityReport({
-          walletName: wallet.name,
-          chainId: String(chainId),
+          walletName: session.walletName,
+          chainId: session.chainId,
           featureNames: Object.keys(wallet.features),
-          walletApiVersions: walletApiVersions.map(String),
-          rpcSpecVersions: rpcSpecVersions.map(String),
-          account,
+          walletApiVersions: session.walletApiVersions,
+          rpcSpecVersions: session.rpcSpecVersions,
+          account: session.account,
         }),
       );
       setState("complete");
