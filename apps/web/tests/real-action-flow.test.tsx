@@ -63,6 +63,21 @@ describe("real action flow", () => {
     expect(html).toContain("cannot move funds");
   });
 
+  it("shows visible progress while checking a recovered receipt", () => {
+    const html = renderToStaticMarkup(
+      <MissingTransactionHashRecovery
+        checking
+        transactionHash="0xabc"
+        walletName="Ready X"
+        onChange={() => undefined}
+        onCheck={() => undefined}
+      />,
+    );
+
+    expect(html).toContain("Checking Starknet receipt");
+    expect(html).toContain("disabled");
+  });
+
   it("reads and formats only the requested private STRK balance", async () => {
     const readPrivateBalances = vi.fn().mockResolvedValue([
       {

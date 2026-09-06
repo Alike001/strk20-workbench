@@ -27,7 +27,8 @@ export class RpcTransactionVerifier implements TransactionVerifier {
   }) {
     this.#endpoint = input?.endpoint ?? "/api/starknet";
     this.#timeoutMs = input?.timeoutMs ?? 20_000;
-    this.#fetch = input?.fetch ?? fetch;
+    this.#fetch =
+      input?.fetch ?? ((request, init) => globalThis.fetch(request, init));
   }
 
   async getTransactionStatus(
@@ -42,7 +43,7 @@ export class RpcTransactionVerifier implements TransactionVerifier {
       body: JSON.stringify({
         jsonrpc: "2.0",
         id: 1,
-        method: "starknet_getTransactionStatus",
+        method: "starknet_getTransactionReceipt",
         params: [transactionHash],
       }),
       cache: "no-store",

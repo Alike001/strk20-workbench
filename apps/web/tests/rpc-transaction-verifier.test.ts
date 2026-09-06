@@ -38,7 +38,7 @@ describe("RpcTransactionVerifier", () => {
     expect(body).toEqual({
       jsonrpc: "2.0",
       id: 1,
-      method: "starknet_getTransactionStatus",
+      method: "starknet_getTransactionReceipt",
       params: ["0xabc"],
     });
   });

@@ -299,3 +299,137 @@ test("guides an unregistered account through wallet-owned first-use setup", asyn
     fullPage: false,
   });
 });
+
+test("recovers a successful receipt when the wallet omits its transaction hash", async ({
+  page,
+}) => {
+  await page.addInitScript(() => {
+    const wallet = {
+      version: "2.4.1",
+      name: "QA Ready Wallet",
+      icon: "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg'/>",
+      chains: ["starknet:SN_MAIN"],
+      accounts: [],
+      features: {
+        "standard:connect": {
+          version: "1.0.0",
+          connect: async () => ({ accounts: [{ address: "0x1234" }] }),
+        },
+        "standard:disconnect": {
+          version: "1.0.0",
+          disconnect: async () => undefined,
+        },
+        "standard:events": {
+          version: "1.0.0",
+          on: () => () => undefined,
+        },
+        "starknet:walletApi": {
+          version: "1.0.0",
+          walletVersion: "1.0.0",
+          id: "qa-ready-wallet",
+          request: async ({ type }: { type: string }) => {
+            if (type === "wallet_requestChainId") return "SN_MAIN";
+            if (type === "wallet_supportedWalletApi") return ["0.10.3"];
+            if (type === "wallet_supportedSpecs") return ["0.8"];
+            if (type === "wallet_strk20Balances") {
+              return [
+                {
+                  token:
+                    "0x04718f5a0fc34cc1af16a1cdee98ffb20c31f5cd61d6ab07201858f4287c938d",
+                  balance: "2000000000000000000",
+                },
+              ];
+            }
+            if (type === "wallet_strk20InvokeTransaction") {
+              throw new Error("Network timeout after wallet submission");
+            }
+            throw new Error(`Unexpected wallet request: ${type}`);
+          },
+        },
+      },
+    };
+
+    window.addEventListener("wallet-standard:app-ready", (event) => {
+      window.setTimeout(() => {
+        (
+          event as CustomEvent<{ register(candidate: unknown): void }>
+        ).detail.register(wallet);
+      }, 100);
+    });
+  });
+
+  await page.route("**/api/starknet", async (route) => {
+    const payload = route.request().postDataJSON() as { method?: string };
+    if (payload.method === "starknet_getTransactionReceipt") {
+      await new Promise((resolve) => setTimeout(resolve, 500));
+      await route.fulfill({
+        status: 200,
+        contentType: "application/json",
+        body: JSON.stringify({
+          jsonrpc: "2.0",
+          id: 1,
+          result: {
+            execution_status: "SUCCEEDED",
+            finality_status: "ACCEPTED_ON_L2",
+          },
+        }),
+      });
+      return;
+    }
+    await route.fulfill({
+      status: 200,
+      contentType: "application/json",
+      body: JSON.stringify({
+        jsonrpc: "2.0",
+        id: 1,
+        result: "0x534e5f4d41494e",
+      }),
+    });
+  });
+  await page.route("**/api/pool-fee", async (route) => {
+    await route.fulfill({
+      status: 200,
+      contentType: "application/json",
+      body: JSON.stringify({
+        feeAmount: "6000000000000000000",
+        feeFormatted: "6 STRK",
+      }),
+    });
+  });
+
+  await page.goto("/workbench");
+  await page.getByRole("button", { name: "Connect wallet" }).click();
+  await page.getByRole("button", { name: /QA Ready Wallet/ }).click();
+  await page
+    .getByRole("textbox", { name: "Total public STRK to deposit" })
+    .fill("8");
+  await page.getByRole("button", { name: "Review real action" }).click();
+  await page
+    .getByRole("button", { name: "Continue to wallet approvals" })
+    .click();
+
+  await expect(
+    page.getByRole("heading", {
+      name: "The wallet did not return a hash to Workbench.",
+    }),
+  ).toBeVisible();
+  await page
+    .getByRole("textbox", { name: "Transaction hash from QA Ready Wallet" })
+    .fill("0xabc");
+  await page
+    .getByRole("button", {
+      name: "Check this transaction — do not resubmit",
+    })
+    .click();
+  await expect(
+    page.getByRole("button", { name: "Checking Starknet receipt…" }),
+  ).toBeDisabled();
+  await expect(
+    page.getByRole("heading", { name: "Starknet confirmed the transaction." }),
+  ).toBeVisible();
+  await expect(page.getByText("The mainnet receipt succeeded.")).toBeVisible();
+  await page.screenshot({
+    path: "/tmp/strk20-receipt-recovery-success.png",
+    fullPage: false,
+  });
+});

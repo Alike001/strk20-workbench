@@ -110,6 +110,7 @@ export function RealActionFlow({
   const [registrationConfirmed, setRegistrationConfirmed] = useState(false);
   const [recoveryHash, setRecoveryHash] = useState("");
   const [recoveryHashError, setRecoveryHashError] = useState<string>();
+  const [recoveryCheckPending, setRecoveryCheckPending] = useState(false);
   const balanceRequest = useRef<AbortController | undefined>(undefined);
   const controller = useMemo(
     () => new RealActionController({ adapter, onChange: setState }),
@@ -215,6 +216,7 @@ export function RealActionFlow({
 
   async function checkRecoveredTransaction() {
     try {
+      setRecoveryCheckPending(true);
       setRecoveryHashError(undefined);
       await controller.recoverSubmittedTransaction(recoveryHash);
     } catch (error) {
@@ -223,6 +225,17 @@ export function RealActionFlow({
           ? error.message
           : "Enter the Starknet transaction hash shown in Ready X.",
       );
+    } finally {
+      setRecoveryCheckPending(false);
+    }
+  }
+
+  async function checkSubmittedTransaction() {
+    try {
+      setRecoveryCheckPending(true);
+      await controller.checkSubmittedTransaction();
+    } finally {
+      setRecoveryCheckPending(false);
     }
   }
 
@@ -469,13 +482,18 @@ export function RealActionFlow({
             </>
           ) : null}
 
-          {state.phase === "uncertain" && state.transactionHash ? (
+          {(state.phase === "uncertain" ||
+            (recoveryCheckPending && state.phase === "confirming")) &&
+          state.transactionHash ? (
             <button
               className={styles.recoveryAction}
               type="button"
-              onClick={() => void controller.checkSubmittedTransaction()}
+              disabled={recoveryCheckPending}
+              onClick={() => void checkSubmittedTransaction()}
             >
-              Check this transaction — do not resubmit
+              {recoveryCheckPending
+                ? "Checking Starknet receipt…"
+                : "Check this transaction — do not resubmit"}
             </button>
           ) : null}
 
@@ -488,6 +506,7 @@ export function RealActionFlow({
                 setRecoveryHashError(undefined);
               }}
               onCheck={() => void checkRecoveredTransaction()}
+              checking={recoveryCheckPending}
               walletName={walletName}
             />
           ) : null}
@@ -510,12 +529,14 @@ export function RealActionFlow({
 }
 
 export function MissingTransactionHashRecovery({
+  checking,
   error,
   onChange,
   onCheck,
   transactionHash,
   walletName,
 }: Readonly<{
+  checking?: boolean;
   error?: string;
   onChange: (value: string) => void;
   onCheck: () => void;
@@ -550,7 +571,11 @@ export function MissingTransactionHashRecovery({
         />
       </label>
       {error ? <p role="alert">{error}</p> : null}
-      <button type="submit">Check this transaction — do not resubmit</button>
+      <button type="submit" disabled={checking}>
+        {checking
+          ? "Checking Starknet receipt…"
+          : "Check this transaction — do not resubmit"}
+      </button>
       <small>
         This only checks the public Starknet receipt. It cannot move funds or
         access wallet secrets.

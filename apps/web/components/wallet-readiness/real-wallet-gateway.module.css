@@ -427,7 +427,9 @@
   cursor: pointer;
 }
 
-.formBoundary button:disabled {
+.formBoundary button:disabled,
+.recoveryAction:disabled,
+.transactionRecovery button:disabled {
   border-color: var(--border-strong);
   color: var(--muted);
   background: #1a1a1a;
