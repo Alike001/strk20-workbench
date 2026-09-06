@@ -33,8 +33,12 @@ test("explains an unregistered private balance request after explicit consent", 
   page,
 }) => {
   await page.addInitScript(() => {
-    const runtime = window as typeof window & { __balanceReads: number };
+    const runtime = window as typeof window & {
+      __balanceReads: number;
+      __invokeCalls: number;
+    };
     runtime.__balanceReads = 0;
+    runtime.__invokeCalls = 0;
     const wallet = {
       version: "2.4.1",
       name: "QA Ready Wallet",
@@ -68,6 +72,25 @@ test("explains an unregistered private balance request after explicit consent", 
                 code: 118,
                 message: "An error occurred (NOT_REGISTERED)",
               });
+            }
+            if (type === "wallet_strk20PrepareInvoke") {
+              return Promise.reject({
+                code: 163,
+                message: "An error occurred (UNKNOWN_ERROR)",
+                data: {
+                  error: {
+                    code: "PROVER_PREPARE_FAILED",
+                    message:
+                      "The proving service could not prepare this action.",
+                  },
+                },
+              });
+            }
+            if (type === "wallet_strk20InvokeTransaction") {
+              runtime.__invokeCalls += 1;
+              throw new Error(
+                "Submission must not run after preparation fails.",
+              );
             }
             throw new Error(`Unexpected wallet request: ${type}`);
           },
@@ -147,4 +170,28 @@ test("explains an unregistered private balance request after explicit consent", 
       exact: false,
     }),
   ).toBeVisible();
+
+  await page
+    .getByRole("button", { name: "Continue to wallet approvals" })
+    .click();
+  await expect(page.getByText("Safe failure details")).toBeVisible();
+  await expect(
+    page.getByText("Proof preparation", { exact: true }),
+  ).toBeVisible();
+  await expect(page.getByText("163", { exact: true })).toBeVisible();
+  await expect(
+    page.getByText("The proving service could not prepare this action."),
+  ).toBeVisible();
+  await expect(
+    page.getByText("No hash returned by wallet", { exact: true }),
+  ).toBeVisible();
+  expect(
+    await page.evaluate(
+      () => (window as typeof window & { __invokeCalls: number }).__invokeCalls,
+    ),
+  ).toBe(0);
+  await page.screenshot({
+    path: "/tmp/strk20-safe-failure-diagnostic.png",
+    fullPage: false,
+  });
 });

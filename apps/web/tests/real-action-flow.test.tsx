@@ -5,6 +5,7 @@ import type { LabAdapter } from "@strk20-workbench/lab-core";
 
 import {
   RealActionFlow,
+  buildSafeFailureDiagnostic,
   buildPoolFeePreview,
   createReviewedAction,
   displayStatus,
@@ -166,5 +167,39 @@ describe("real action flow", () => {
     expect(displayStatus("submitting")).toBe("submitted");
     expect(displayStatus("cancelled")).toBe("cancelled");
     expect(displayStatus("uncertain")).toBe("uncertain");
+  });
+
+  it("exposes only sanitized wallet failure details", () => {
+    const diagnostic = buildSafeFailureDiagnostic({
+      code: "UNKNOWN",
+      title: "Unexpected error",
+      explanation: "The action stopped.",
+      nextAction: "Inspect the details.",
+      retryable: false,
+      phase: "preparing-proof",
+      mode: "real",
+      network: "SN_MAIN",
+      rawCause: {
+        code: 163,
+        message: "An error occurred at https://private-rpc.example/v2/secret",
+        data: {
+          error: {
+            code: "PROVER_PREPARE_FAILED",
+            message: "Prover unavailable; token=my-private-token",
+          },
+        },
+      },
+    });
+
+    expect(diagnostic).toEqual({
+      phase: "Proof preparation",
+      workbenchCode: "UNKNOWN",
+      walletCode: "163",
+      walletMessage: "An error occurred at [redacted URL]",
+      walletDetail: "Prover unavailable; token=[redacted]",
+      transactionHash: "No hash returned by wallet",
+    });
+    expect(JSON.stringify(diagnostic)).not.toContain("private-rpc.example");
+    expect(JSON.stringify(diagnostic)).not.toContain("my-private-token");
   });
 });

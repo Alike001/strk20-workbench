@@ -10,6 +10,7 @@ export {
 } from "./real-wallet-gateway";
 export {
   RealActionFlow,
+  buildSafeFailureDiagnostic,
   buildPoolFeePreview,
   createReviewedAction,
   displayStatus,
@@ -18,4 +19,5 @@ export {
   readPoolFee,
   type PoolFeePreview,
   type PoolFeeQuote,
+  type SafeFailureDiagnostic,
 } from "./real-action-flow";

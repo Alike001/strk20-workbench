@@ -61,6 +61,15 @@ export type PoolFeePreview = Readonly<{
   warning?: string;
 }>;
 
+export type SafeFailureDiagnostic = Readonly<{
+  phase: string;
+  workbenchCode: string;
+  walletCode?: string;
+  walletMessage?: string;
+  walletDetail?: string;
+  transactionHash: string;
+}>;
+
 const EMPTY_DRAFT: Draft = {
   action: "shield",
   amount: "",
@@ -373,6 +382,13 @@ export function RealActionFlow({
             <p className={styles.controllerMessage}>{state.message}</p>
           ) : null}
 
+          {state.phase === "failed" && state.error ? (
+            <FailureDiagnostic
+              error={state.error}
+              transactionHash={state.transactionHash}
+            />
+          ) : null}
+
           {state.phase === "uncertain" ? (
             <button
               className={styles.recoveryAction}
@@ -458,6 +474,132 @@ export function buildPoolFeePreview(
         }
       : {}),
   };
+}
+
+function FailureDiagnostic({
+  error,
+  transactionHash,
+}: Readonly<{ error: LabError; transactionHash?: string }>) {
+  const diagnostic = buildSafeFailureDiagnostic(error, transactionHash);
+  return (
+    <details className={styles.failureDiagnostic} open>
+      <summary>Safe failure details</summary>
+      <dl>
+        <div>
+          <dt>Stopped during</dt>
+          <dd>{diagnostic.phase}</dd>
+        </div>
+        <div>
+          <dt>Workbench code</dt>
+          <dd>{diagnostic.workbenchCode}</dd>
+        </div>
+        {diagnostic.walletCode ? (
+          <div>
+            <dt>Wallet code</dt>
+            <dd>{diagnostic.walletCode}</dd>
+          </div>
+        ) : null}
+        {diagnostic.walletMessage ? (
+          <div>
+            <dt>Wallet message</dt>
+            <dd>{diagnostic.walletMessage}</dd>
+          </div>
+        ) : null}
+        {diagnostic.walletDetail ? (
+          <div>
+            <dt>Wallet detail</dt>
+            <dd>{diagnostic.walletDetail}</dd>
+          </div>
+        ) : null}
+        <div>
+          <dt>Transaction hash</dt>
+          <dd>{diagnostic.transactionHash}</dd>
+        </div>
+      </dl>
+      <p>
+        Only the wallet&apos;s error code and message are shown. Keys, notes,
+        balances, RPC URLs, and secrets are never included.
+      </p>
+    </details>
+  );
+}
+
+export function buildSafeFailureDiagnostic(
+  error: LabError,
+  transactionHash?: string,
+): SafeFailureDiagnostic {
+  const walletValues = collectWalletDiagnosticValues(error.rawCause);
+  return {
+    phase: failurePhaseLabel(error.phase),
+    workbenchCode: error.code,
+    ...(walletValues.codes[0] ? { walletCode: walletValues.codes[0] } : {}),
+    ...(walletValues.messages[0]
+      ? { walletMessage: walletValues.messages[0] }
+      : {}),
+    ...(walletValues.messages[1]
+      ? { walletDetail: walletValues.messages[1] }
+      : {}),
+    transactionHash: transactionHash ?? "No hash returned by wallet",
+  };
+}
+
+function collectWalletDiagnosticValues(value: unknown): {
+  codes: string[];
+  messages: string[];
+} {
+  const codes: string[] = [];
+  const messages: string[] = [];
+
+  function visit(candidate: unknown, depth: number) {
+    if (depth > 3 || candidate === null || candidate === undefined) return;
+    if (typeof candidate === "string") {
+      addUnique(messages, sanitizeDiagnosticText(candidate));
+      return;
+    }
+    if (typeof candidate !== "object" || Array.isArray(candidate)) return;
+
+    const record = candidate as Record<string, unknown>;
+    if (typeof record.code === "number" || typeof record.code === "string") {
+      addUnique(codes, String(record.code).slice(0, 64));
+    }
+    if (typeof record.message === "string") {
+      addUnique(messages, sanitizeDiagnosticText(record.message));
+    }
+    for (const key of ["error", "cause", "data", "details"] as const) {
+      visit(record[key], depth + 1);
+    }
+  }
+
+  visit(value, 0);
+  return { codes, messages };
+}
+
+function addUnique(values: string[], value: string) {
+  if (value && !values.includes(value)) values.push(value);
+}
+
+function sanitizeDiagnosticText(value: string): string {
+  return value
+    .replace(/\bhttps?:\/\/[^\s)]+/giu, "[redacted URL]")
+    .replace(/\bbearer\s+\S+/giu, "Bearer [redacted]")
+    .replace(
+      /\b(api[_-]?key|token|secret|authorization|password|credential|rpc)\s*[:=]\s*["']?[^\s,"'}]+/giu,
+      "$1=[redacted]",
+    )
+    .replace(/\s+/gu, " ")
+    .trim()
+    .slice(0, 280);
+}
+
+function failurePhaseLabel(phase: LabError["phase"]): string {
+  const labels: Partial<Record<LabError["phase"], string>> = {
+    validating: "Action validation",
+    "awaiting-user": "Wallet request",
+    "preparing-proof": "Proof preparation",
+    submitting: "Wallet submission",
+    confirming: "Receipt confirmation",
+  };
+  return labels[phase] ?? phase.replaceAll("-", " ");
 }
 
 export function createReviewedAction(draft: Draft): LabAction {
