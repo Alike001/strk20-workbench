@@ -125,9 +125,10 @@ describe("Documentation page", () => {
 
     expect(html).toContain("Submission evidence is still incomplete.");
     expect(html).toContain(
-      "strk20.json lists 0 mainnet transaction hashes, 0 contract addresses, a public demo URL, and no demo video",
+      "strk20.json lists 1 mainnet transaction hashes, 0 contract addresses, a public demo URL, and no demo video",
     );
-    expect(html.match(/0 listed/g)).toHaveLength(2);
+    expect(html).toContain("1 listed");
+    expect(html.match(/0 listed/g)).toHaveLength(1);
     expect(html).toContain("Live");
     expect(html.match(/Not listed/g)).toHaveLength(1);
     expect(html).toContain("Evidence incomplete");
