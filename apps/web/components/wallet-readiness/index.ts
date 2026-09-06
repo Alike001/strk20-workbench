@@ -14,6 +14,7 @@ export {
   buildPoolFeePreview,
   createReviewedAction,
   displayStatus,
+  isRegistrationRequired,
   privateBalanceErrorMessage,
   readPrivateStrkBalance,
   readPoolFee,

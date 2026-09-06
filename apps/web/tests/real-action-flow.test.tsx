@@ -9,6 +9,7 @@ import {
   buildPoolFeePreview,
   createReviewedAction,
   displayStatus,
+  isRegistrationRequired,
   privateBalanceErrorMessage,
   readPrivateStrkBalance,
   readPoolFee,
@@ -75,7 +76,16 @@ describe("real action flow", () => {
         network: "SN_MAIN",
       }),
     ).toBe(
-      "Ready X says this wallet has not used STRK20 yet. Your first successful shield registers it automatically. No transaction was started.",
+      "STRK20 is available, but this account has not completed one-time wallet setup. Open Ready X, shield once from its own privacy screen, then return and try again. No transaction was started.",
+    );
+    expect(
+      isRegistrationRequired({
+        code: "NOT_REGISTERED",
+        phase: "preparing-proof",
+      }),
+    ).toBe(true);
+    expect(isRegistrationRequired(new Error("Something else failed"))).toBe(
+      false,
     );
   });
 

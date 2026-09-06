@@ -4,7 +4,7 @@ import type {
   AdapterSnapshot,
   CapabilityReport,
 } from "@strk20-workbench/lab-core";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 
 import { RpcTransactionVerifier } from "../../lib/wallet/rpc-transaction-verifier";
 import {
@@ -15,8 +15,10 @@ import {
 import {
   connectPrivacyWallet,
   createWalletDiscovery,
+  waitForDiscoveredWallets,
   type ConnectedWalletSession,
   type PrivacyWallet,
+  type WalletDiscovery,
 } from "../../lib/wallet/wallet-session";
 import {
   WalletReadinessPanel,
@@ -39,9 +41,12 @@ export function RealWalletGateway() {
   const [report, setReport] = useState<CapabilityReport>();
   const [selectedWallet, setSelectedWallet] = useState<PrivacyWallet>();
   const [adapter, setAdapter] = useState<WalletApiAdapter>();
+  const discoveryRef = useRef<WalletDiscovery | undefined>(undefined);
+  const discoveryRequest = useRef<AbortController | undefined>(undefined);
 
   useEffect(() => {
     const discovery = createWalletDiscovery();
+    discoveryRef.current = discovery;
     let active = true;
     queueMicrotask(() => {
       if (active) setWallets(discovery.getWallets());
@@ -49,6 +54,8 @@ export function RealWalletGateway() {
     const unsubscribe = discovery.subscribe(setWallets);
     return () => {
       active = false;
+      discoveryRequest.current?.abort();
+      discoveryRef.current = undefined;
       unsubscribe();
     };
   }, []);
@@ -58,15 +65,38 @@ export function RealWalletGateway() {
     [session],
   );
 
-  function openPicker() {
+  async function openPicker() {
     setDetail(undefined);
     setShowPicker(true);
-    if (wallets.length === 0) {
+    const discovery = discoveryRef.current;
+    if (!discovery) {
       setState("unsupported");
-      setDetail(
-        "No Starknet wallet was discovered. Install or open a privacy-enabled wallet, then retry.",
-      );
+      setDetail("Wallet discovery is not ready yet. Wait a moment and retry.");
+      return;
     }
+
+    discoveryRequest.current?.abort();
+    const request = new AbortController();
+    discoveryRequest.current = request;
+    setState("discovering");
+
+    const discovered = await waitForDiscoveredWallets(discovery, {
+      timeoutMs: 2_000,
+      signal: request.signal,
+    });
+    if (request.signal.aborted) return;
+    setWallets(discovered);
+
+    if (discovered.length > 0) {
+      setState("disconnected");
+      setDetail("Wallet detected. Choose it from the list below.");
+      return;
+    }
+
+    setState("unsupported");
+    setDetail(
+      "No Starknet wallet was discovered after waiting for the extension. Unlock Ready X, then retry.",
+    );
   }
 
   async function connect(wallet: PrivacyWallet) {
@@ -117,10 +147,10 @@ export function RealWalletGateway() {
         <WalletReadinessPanel
           chainName={session?.chainId}
           detail={detail}
-          onConnect={openPicker}
+          onConnect={() => void openPicker()}
           onRetry={() => {
             if (selectedWallet) void connect(selectedWallet);
-            else openPicker();
+            else void openPicker();
           }}
           onSwitchNetwork={() => {
             if (selectedWallet) void connect(selectedWallet);
@@ -182,10 +212,12 @@ export function RealWalletGateway() {
                 </li>
               ))}
             </ul>
+          ) : state === "discovering" ? (
+            <p>Waiting briefly for Ready X to become visible…</p>
           ) : (
             <p>
-              No wallet is visible to this browser. Sandbox remains fully
-              available above.
+              No wallet is visible yet. Unlock Ready X and press Retry; Sandbox
+              remains available above.
             </p>
           )}
         </div>

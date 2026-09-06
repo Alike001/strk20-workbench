@@ -448,6 +448,81 @@
   line-height: 1.55;
 }
 
+.registrationConfirmed {
+  margin: 0 0 1rem;
+  border-left: 2px solid #4ca875;
+  padding: 0.8rem 1rem;
+  color: var(--foreground);
+  background: rgb(76 168 117 / 10%);
+  font-size: 0.8rem;
+  line-height: 1.55;
+}
+
+.registrationRecovery {
+  display: grid;
+  gap: 0.8rem;
+  margin-top: 1rem;
+  border: 1px solid var(--accent);
+  padding: clamp(1rem, 2.5vw, 1.5rem);
+  background: rgb(197 52 0 / 8%);
+}
+
+.registrationRecovery > span {
+  color: var(--accent);
+  font: 700 0.68rem/1.3 var(--font-mono);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.registrationRecovery h4,
+.registrationRecovery p,
+.registrationRecovery ol,
+.registrationRecovery small {
+  margin: 0;
+}
+
+.registrationRecovery h4 {
+  font-family: var(--font-display);
+  font-size: clamp(1.5rem, 3vw, 2.2rem);
+  letter-spacing: -0.035em;
+  line-height: 1;
+  text-transform: uppercase;
+}
+
+.registrationRecovery p,
+.registrationRecovery li,
+.registrationRecovery small {
+  max-width: 56rem;
+  color: var(--muted);
+  font-size: 0.78rem;
+  line-height: 1.55;
+}
+
+.registrationRecovery ol {
+  display: grid;
+  gap: 0.45rem;
+  padding-left: 1.25rem;
+}
+
+.registrationRecovery button {
+  justify-self: start;
+  min-height: 3rem;
+  border: 1px solid var(--accent);
+  border-radius: var(--radius-small);
+  padding: 0.75rem 1rem;
+  color: #fff;
+  background: var(--accent);
+  font: inherit;
+  font-size: 0.8rem;
+  font-weight: 750;
+  cursor: pointer;
+}
+
+.registrationRecovery button:disabled {
+  cursor: wait;
+  opacity: 0.65;
+}
+
 .failureDiagnostic {
   margin-top: 1rem;
   border: 1px solid var(--border-strong);
@@ -543,7 +618,8 @@
 
   .formBoundary button,
   .recoveryAction,
-  .privateBalanceAccess button {
+  .privateBalanceAccess button,
+  .registrationRecovery button {
     width: 100%;
   }
 

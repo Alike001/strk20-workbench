@@ -170,7 +170,7 @@ describe("WalletApiAdapter action mapping", () => {
   it("does not invent a standalone registration transaction", () => {
     expect(() =>
       mapLabActionToStrk20({ type: "register", actorId: "alice" }, snapshot()),
-    ).toThrow(/automatic on first STRK20 use/i);
+    ).toThrow(/inside the wallet/i);
   });
 
   it("recognizes text and felt encodings of Starknet Mainnet", () => {
@@ -194,7 +194,7 @@ describe("WalletApiAdapter safety boundaries", () => {
     expect(
       report.capabilities.find((item) => item.name === "register-supported")
         ?.explanation,
-    ).toMatch(/automatically/i);
+    ).toMatch(/wallet's own privacy screen/i);
     expect(wallet.strk20Balances).not.toHaveBeenCalled();
     expect(wallet.strk20PrepareInvoke).not.toHaveBeenCalled();
     expect(wallet.strk20InvokeTransaction).not.toHaveBeenCalled();

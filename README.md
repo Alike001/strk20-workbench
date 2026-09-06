@@ -27,6 +27,10 @@ The first release is planned as a lightweight pnpm workspace containing:
 
 No sandbox result will be represented as a genuine zero-knowledge proof or mainnet transaction.
 
+### First-use wallet boundary
+
+Wallet API `0.10.3` does not give a dapp a registration method. A new account must shield once from its privacy-enabled wallet's own screen, where the wallet keeps the viewing key and publishes registration with the shield transaction. Workbench detects `NOT_REGISTERED`, explains that one-time step, and lets the user recheck before returning to the reviewed action. It never asks for a viewing key and never retries a failed action automatically.
+
 ## Documentation & Contributing
 
 - [`CONTRIBUTING.md`](./CONTRIBUTING.md) — Contribution workflow, pull request guidelines, and safety boundaries.

@@ -135,7 +135,8 @@ const repositoryGuides = [
 
 const walletApiExample = `const actions: STRK20_ACTION[] = [mappedReviewedAction];
 
-// The wallet owns first-use registration, proving and approval.
+// A first-time account shields once inside its privacy-enabled wallet.
+// Wallet API 0.10.3 has no dapp-callable registration method.
 const { transaction_hash } =
   await account.strk20InvokeTransaction(actions);
 

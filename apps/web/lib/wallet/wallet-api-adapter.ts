@@ -140,7 +140,7 @@ export class WalletApiAdapter implements LabAdapter {
         ),
         actionCapability(
           "register-supported",
-          "The wallet handles registration automatically on first STRK20 use; there is no standalone registration transaction.",
+          "Registration stays inside the wallet. A first-time account must shield once from the wallet's own privacy screen before dapp actions.",
         ),
         actionCapability(
           "shield-supported",
@@ -508,7 +508,7 @@ export function mapLabActionToStrk20(
 ): STRK20_ACTION {
   if (action.type === "register") {
     throw new TypeError(
-      "Registration is automatic on first STRK20 use and is not a standalone wallet action.",
+      "Registration stays inside the wallet and is not a standalone Wallet API action.",
     );
   }
   const token = requireAddress(action.token.id, "token");

@@ -51,16 +51,18 @@ Ready X was selected in the hosted Workbench, approved account access, reported 
 
 The first mainnet `wallet_strk20PrepareInvoke` probe stopped before submission with `INVALID_REQUEST_PAYLOAD` and no transaction hash. The Wallet API schema defines action amounts as Starknet `FELT` values: hexadecimal strings matching `0x…`, not base-10 strings. The Workbench now converts reviewed human amounts to hexadecimal only at the wallet boundary—for example, 8 STRK becomes `0x6f05b59d3b200000`—while retaining ordinary decimal STRK labels in the UI. A strict browser regression rejects any decimal wire amount before its mock prover runs.
 
-This corrected encoding still requires one Ready X mainnet retest before prepare/invoke compatibility is marked complete.
+This corrected encoding reached the next valid precondition: simulated preparation returned `NOT_REGISTERED`, again with no transaction hash. The official STRK20 starter does not put `strk20PrepareInvoke` in front of a normal shield, so the Workbench switched to the documented direct `strk20InvokeTransaction` route.
 
-That retest reached the next valid precondition: simulated preparation returned `NOT_REGISTERED`, again with no transaction hash. The official STRK20 starter does not put `strk20PrepareInvoke` in front of a normal shield. It calls `strk20InvokeTransaction` directly so the wallet owns first-use registration, proving, approval, and submission as one combined flow. The Workbench now follows that route. Simulated preparation remains useful as a separate preview tool after registration, but it is not a gate in front of the first shield.
+The direct Ready X call then returned the same `NOT_REGISTERED` result before showing a wallet approval or returning a hash. That result is now treated as a first-use onboarding state rather than an ordinary action failure. Wallet API `0.10.3` exposes balances, prepare, and invoke methods but no registration action a dapp can call. The user must shield once from Ready X's own privacy screen; after confirmation, Workbench deliberately rechecks the private balance and returns the reviewed action to its approval step without resubmitting automatically.
+
+The mainnet receipt `0x04816dbb3ec04d21cc5da879358e485afdbfe52a3d8f6b8bf4a678003b6e0278` independently confirms the wallet-owned first-use shape. It succeeded at block `13876176` and the official pool emitted `ViewingKeySet`, `Deposit`, `EncNoteCreated`, and the fee `Withdrawal` in that one transaction. Workbench never derives, requests, or stores the viewing key.
 
 ## Compatibility gate partially complete
 
 Before real-mode UI is treated as fully supported, the team must still record:
 
 1. the Ready X extension version (the product now displays it after connection);
-2. a minimal prepare/invoke result on Starknet Mainnet;
+2. a wallet-owned first shield followed by a minimal Workbench invoke result on Starknet Mainnet;
 3. the resulting transaction hash and verified pool interaction.
 
 Already recorded: Ready X, Wallet API `0.10.3`, exact application package pins, successful capability detection without reading private balances, and the current wallet/pool/receipt-verifier boundary.

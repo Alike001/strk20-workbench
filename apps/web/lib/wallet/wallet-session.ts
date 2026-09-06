@@ -11,6 +11,11 @@ export type WalletDiscovery = Readonly<{
   subscribe(listener: (wallets: readonly PrivacyWallet[]) => void): () => void;
 }>;
 
+export type WalletDiscoveryWaitOptions = Readonly<{
+  timeoutMs?: number;
+  signal?: AbortSignal;
+}>;
+
 export type ConnectedWalletSession = Readonly<{
   account: Strk20WalletAccount;
   wallet: PrivacyWallet;
@@ -54,6 +59,51 @@ export function createWalletDiscoveryFromStore(
       return store.subscribe((wallets) => listener([...wallets]));
     },
   };
+}
+
+/**
+ * Wallet extensions can register a moment after React becomes interactive.
+ * Wait briefly for the existing discovery store instead of treating an empty
+ * first read as proof that no wallet is installed.
+ */
+export function waitForDiscoveredWallets(
+  discovery: WalletDiscovery,
+  options: WalletDiscoveryWaitOptions = {},
+): Promise<readonly PrivacyWallet[]> {
+  const current = discovery.getWallets();
+  if (current.length > 0 || options.signal?.aborted) {
+    return Promise.resolve(current);
+  }
+
+  const timeoutMs = Math.max(0, options.timeoutMs ?? 2_000);
+  return new Promise((resolve) => {
+    let settled = false;
+    const cleanup: { unsubscribe?: () => void } = {};
+
+    const finish = (wallets: readonly PrivacyWallet[]) => {
+      if (settled) return;
+      settled = true;
+      globalThis.clearTimeout(timeout);
+      options.signal?.removeEventListener("abort", onAbort);
+      cleanup.unsubscribe?.();
+      resolve([...wallets]);
+    };
+    const onAbort = () => finish([]);
+    const timeout = globalThis.setTimeout(
+      () => finish(discovery.getWallets()),
+      timeoutMs,
+    );
+
+    options.signal?.addEventListener("abort", onAbort, { once: true });
+    if (options.signal?.aborted) onAbort();
+    cleanup.unsubscribe = discovery.subscribe((wallets) => {
+      if (wallets.length > 0) finish(wallets);
+    });
+    if (settled) cleanup.unsubscribe();
+
+    const afterSubscribe = discovery.getWallets();
+    if (afterSubscribe.length > 0) finish(afterSubscribe);
+  });
 }
 
 /** Must only be called in response to an explicit user wallet choice. */

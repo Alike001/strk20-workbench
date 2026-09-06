@@ -4,6 +4,7 @@ import type { PrivacyWallet } from "../lib/wallet/wallet-session";
 import {
   connectPrivacyWallet,
   createWalletDiscoveryFromStore,
+  waitForDiscoveredWallets,
   type WalletConnectionDriver,
 } from "../lib/wallet/wallet-session";
 
@@ -48,6 +49,61 @@ describe("wallet discovery", () => {
     );
     expect(updates).toEqual([[wallet]]);
     expect(subscribe).toHaveBeenCalledTimes(1);
+  });
+
+  it("waits for an extension that registers after the first empty read", async () => {
+    let discovered: PrivacyWallet[] = [];
+    const listeners = new Set<(wallets: readonly PrivacyWallet[]) => void>();
+    const discovery = {
+      getWallets: () => [...discovered],
+      subscribe(listener: (wallets: readonly PrivacyWallet[]) => void) {
+        listeners.add(listener);
+        return () => listeners.delete(listener);
+      },
+    };
+
+    const pending = waitForDiscoveredWallets(discovery, { timeoutMs: 1_000 });
+    discovered = [wallet];
+    for (const listener of listeners) listener(discovered);
+
+    await expect(pending).resolves.toEqual([wallet]);
+    expect(listeners.size).toBe(0);
+  });
+
+  it("returns an empty list after the bounded discovery window", async () => {
+    vi.useFakeTimers();
+    try {
+      const discovery = {
+        getWallets: () => [],
+        subscribe: () => vi.fn(),
+      };
+      const pending = waitForDiscoveredWallets(discovery, { timeoutMs: 250 });
+      await vi.advanceTimersByTimeAsync(250);
+      await expect(pending).resolves.toEqual([]);
+    } finally {
+      vi.useRealTimers();
+    }
+  });
+
+  it("stops waiting when the discovery request is cancelled", async () => {
+    const listeners = new Set<(wallets: readonly PrivacyWallet[]) => void>();
+    const discovery = {
+      getWallets: () => [],
+      subscribe(listener: (wallets: readonly PrivacyWallet[]) => void) {
+        listeners.add(listener);
+        return () => listeners.delete(listener);
+      },
+    };
+    const request = new AbortController();
+
+    const pending = waitForDiscoveredWallets(discovery, {
+      timeoutMs: 10_000,
+      signal: request.signal,
+    });
+    request.abort();
+
+    await expect(pending).resolves.toEqual([]);
+    expect(listeners.size).toBe(0);
   });
 });
 

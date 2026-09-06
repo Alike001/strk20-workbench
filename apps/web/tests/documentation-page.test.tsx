@@ -86,7 +86,8 @@ describe("Documentation page", () => {
 
     expect(html).toContain("Small Wallet API example");
     expect(html).toContain("account.strk20InvokeTransaction(actions)");
-    expect(html).toContain("first-use registration, proving and approval");
+    expect(html).toContain("first-time account shields once");
+    expect(html).toContain("no dapp-callable registration method");
     expect(html).toContain("transaction_hash");
     expect(html).toContain("A returned hash is not proof");
     expect(html).not.toContain("wallet_strk20Submit");
