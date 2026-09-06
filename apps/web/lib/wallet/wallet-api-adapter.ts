@@ -464,6 +464,18 @@ export class WalletApiAdapter implements LabAdapter {
     ) {
       return this.#error("INSUFFICIENT_PRIVATE_BALANCE", phase, cause);
     }
+    if (
+      rpcCode === 114 ||
+      message.includes("invalid_request_payload") ||
+      message.includes("invalid request payload")
+    ) {
+      return this.#error(
+        "INVALID_ACTION",
+        phase,
+        cause,
+        "The wallet rejected the STRK20 request encoding or action shape.",
+      );
+    }
     if (rpcCode === 162 || message.includes("api_version_not_supported")) {
       return this.#error("WALLET_UNSUPPORTED", phase, cause);
     }
@@ -510,7 +522,7 @@ export function mapLabActionToStrk20(
     );
   }
   const token = requireAddress(action.token.id, "token");
-  const amount = action.amount.toString();
+  const amount = toFelt(action.amount);
   if (action.type === "shield") return { type: "deposit", token, amount };
   if (action.type === "withdraw") {
     return {
@@ -527,6 +539,11 @@ export function mapLabActionToStrk20(
     amount,
     recipient: requireAddress(recipient, "private-transfer recipient"),
   };
+}
+
+function toFelt(value: bigint): string {
+  if (value < 0n) throw new TypeError("A STRK20 amount cannot be negative.");
+  return `0x${value.toString(16)}`;
 }
 
 export function isMainnetChain(chainId: string): boolean {

@@ -47,6 +47,12 @@ It does **not** call `wallet_strk20Balances`, `wallet_strk20PrepareInvoke`, or `
 
 Ready X was selected in the hosted Workbench, approved account access, reported Starknet Mainnet, advertised Wallet API `0.10.3`, and exposed the required STRK20 methods. The configured official pool and receipt-verifier checks also passed. This proves discovery and capability compatibility without reading a private balance or starting a transaction; it does not yet prove successful preparation, proving, or submission.
 
+## STRK20 wire encoding finding on 2026-09-06
+
+The first mainnet `wallet_strk20PrepareInvoke` probe stopped before submission with `INVALID_REQUEST_PAYLOAD` and no transaction hash. The Wallet API schema defines action amounts as Starknet `FELT` values: hexadecimal strings matching `0x…`, not base-10 strings. The Workbench now converts reviewed human amounts to hexadecimal only at the wallet boundary—for example, 8 STRK becomes `0x6f05b59d3b200000`—while retaining ordinary decimal STRK labels in the UI. A strict browser regression rejects any decimal wire amount before its mock prover runs.
+
+This corrected encoding still requires one Ready X mainnet retest before prepare/invoke compatibility is marked complete.
+
 ## Compatibility gate partially complete
 
 Before real-mode UI is treated as fully supported, the team must still record:

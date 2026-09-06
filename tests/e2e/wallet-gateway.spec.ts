@@ -36,6 +36,7 @@ test("explains an unregistered private balance request after explicit consent", 
     const runtime = window as typeof window & {
       __balanceReads: number;
       __invokeCalls: number;
+      __preparedAmount?: string;
     };
     runtime.__balanceReads = 0;
     runtime.__invokeCalls = 0;
@@ -62,7 +63,13 @@ test("explains an unregistered private balance request after explicit consent", 
           version: "1.0.0",
           walletVersion: "1.0.0",
           id: "qa-ready-wallet",
-          request: async ({ type }: { type: string }) => {
+          request: async ({
+            type,
+            params,
+          }: {
+            type: string;
+            params?: { actions?: Array<{ amount?: string }> };
+          }) => {
             if (type === "wallet_requestChainId") return "SN_MAIN";
             if (type === "wallet_supportedWalletApi") return ["0.10.3"];
             if (type === "wallet_supportedSpecs") return ["0.8"];
@@ -74,6 +81,13 @@ test("explains an unregistered private balance request after explicit consent", 
               });
             }
             if (type === "wallet_strk20PrepareInvoke") {
+              runtime.__preparedAmount = params?.actions?.[0]?.amount;
+              if (runtime.__preparedAmount !== "0x6f05b59d3b200000") {
+                return Promise.reject({
+                  code: 114,
+                  message: "An error occurred (INVALID_REQUEST_PAYLOAD)",
+                });
+              }
               return Promise.reject({
                 code: 163,
                 message: "An error occurred (UNKNOWN_ERROR)",
@@ -185,6 +199,16 @@ test("explains an unregistered private balance request after explicit consent", 
   await expect(
     page.getByText("No hash returned by wallet", { exact: true }),
   ).toBeVisible();
+  expect(
+    await page.evaluate(
+      () =>
+        (
+          window as typeof window & {
+            __preparedAmount?: string;
+          }
+        ).__preparedAmount,
+    ),
+  ).toBe("0x6f05b59d3b200000");
   expect(
     await page.evaluate(
       () => (window as typeof window & { __invokeCalls: number }).__invokeCalls,

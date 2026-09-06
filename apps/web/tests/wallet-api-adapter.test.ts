@@ -112,7 +112,7 @@ describe("WalletApiAdapter action mapping", () => {
     expect(mapLabActionToStrk20(shield, snapshot())).toEqual({
       type: "deposit",
       token: TOKEN,
-      amount: "25",
+      amount: "0x19",
     });
     expect(
       mapLabActionToStrk20(
@@ -125,7 +125,12 @@ describe("WalletApiAdapter action mapping", () => {
         },
         snapshot(),
       ),
-    ).toEqual({ type: "transfer", token: TOKEN, amount: "12", recipient: BOB });
+    ).toEqual({
+      type: "transfer",
+      token: TOKEN,
+      amount: "0xc",
+      recipient: BOB,
+    });
     expect(
       mapLabActionToStrk20(
         {
@@ -140,7 +145,7 @@ describe("WalletApiAdapter action mapping", () => {
     ).toEqual({
       type: "transfer",
       token: TOKEN,
-      amount: "3",
+      amount: "0x3",
       recipient: "0xcafe",
     });
     expect(
@@ -157,7 +162,7 @@ describe("WalletApiAdapter action mapping", () => {
     ).toEqual({
       type: "withdraw",
       token: TOKEN,
-      amount: "4",
+      amount: "0x4",
       recipient: ALICE,
     });
   });
@@ -286,11 +291,11 @@ describe("WalletApiAdapter safety boundaries", () => {
       transactionHash: TX_HASH,
     });
     expect(wallet.strk20PrepareInvoke).toHaveBeenCalledWith(
-      [{ type: "deposit", token: TOKEN, amount: "25" }],
+      [{ type: "deposit", token: TOKEN, amount: "0x19" }],
       true,
     );
     expect(wallet.strk20InvokeTransaction).toHaveBeenCalledWith([
-      { type: "deposit", token: TOKEN, amount: "25" },
+      { type: "deposit", token: TOKEN, amount: "0x19" },
     ]);
     expect(check.getTransactionStatus).toHaveBeenCalledWith(TX_HASH, undefined);
     expect(events).toEqual([
@@ -325,6 +330,33 @@ describe("WalletApiAdapter safety boundaries", () => {
     ).resolves.toMatchObject({
       status: "failed",
       error: { code: "PROVER_BUSY", retryable: true },
+    });
+  });
+
+  it("classifies a Wallet API payload rejection as an invalid action", async () => {
+    const adapter = createAdapter({
+      account: account({
+        strk20PrepareInvoke: vi
+          .fn()
+          .mockRejectedValue(
+            new Error("An error occurred (INVALID_REQUEST_PAYLOAD)"),
+          ),
+      }),
+    });
+
+    await expect(
+      adapter.execute(shield, {
+        idempotencyKey: "invalid-payload",
+        onEvent: vi.fn(),
+      }),
+    ).resolves.toMatchObject({
+      status: "failed",
+      error: {
+        code: "INVALID_ACTION",
+        phase: "preparing-proof",
+        explanation:
+          "The wallet rejected the STRK20 request encoding or action shape.",
+      },
     });
   });
 
