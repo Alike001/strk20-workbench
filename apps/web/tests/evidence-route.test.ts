@@ -20,9 +20,25 @@ describe("GET /api/evidence", () => {
           receiptStatus: "unknown",
           poolInteraction: "not-verified",
         }),
+        expect.objectContaining({
+          action: "private-transfer",
+          transactionHash:
+            "0x04fbfb9204259a2c26aa4c5550f6bfd3acd67c4821ab23a7c50c537338093b20",
+          receiptStatus: "unknown",
+          poolInteraction: "not-verified",
+        }),
+        expect.objectContaining({
+          action: "withdraw",
+          transactionHash:
+            "0x0029a150756c3184bb1818cc0b471277dd6cd19a860d5d4069cfcaea4418a597",
+          receiptStatus: "unknown",
+          poolInteraction: "not-verified",
+        }),
       ]);
       expect(payload.manifest.transactions).toEqual([
         "0x039372b04a863fd5cd016f2715034dc6286b7c61f63abe96199ddf65b35da6c0",
+        "0x04fbfb9204259a2c26aa4c5550f6bfd3acd67c4821ab23a7c50c537338093b20",
+        "0x0029a150756c3184bb1818cc0b471277dd6cd19a860d5d4069cfcaea4418a597",
       ]);
       expect(payload.rpcConfigured).toBe(false);
     } finally {

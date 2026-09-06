@@ -4,6 +4,16 @@
       "action": "shield",
       "transaction_hash": "0x039372b04a863fd5cd016f2715034dc6286b7c61f63abe96199ddf65b35da6c0",
       "created_at": "2026-09-06T18:02:00.000Z"
+    },
+    {
+      "action": "private-transfer",
+      "transaction_hash": "0x04fbfb9204259a2c26aa4c5550f6bfd3acd67c4821ab23a7c50c537338093b20",
+      "created_at": "2026-09-06T21:18:00.000Z"
+    },
+    {
+      "action": "withdraw",
+      "transaction_hash": "0x0029a150756c3184bb1818cc0b471277dd6cd19a860d5d4069cfcaea4418a597",
+      "created_at": "2026-09-06T21:25:00.000Z"
     }
   ]
 }
