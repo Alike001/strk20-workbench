@@ -36,10 +36,12 @@ test("explains an unregistered private balance request after explicit consent", 
     const runtime = window as typeof window & {
       __balanceReads: number;
       __invokeCalls: number;
+      __prepareCalls: number;
       __preparedAmount?: string;
     };
     runtime.__balanceReads = 0;
     runtime.__invokeCalls = 0;
+    runtime.__prepareCalls = 0;
     const wallet = {
       version: "2.4.1",
       name: "QA Ready Wallet",
@@ -81,6 +83,11 @@ test("explains an unregistered private balance request after explicit consent", 
               });
             }
             if (type === "wallet_strk20PrepareInvoke") {
+              runtime.__prepareCalls += 1;
+              throw new Error("The combined flow must not call prepare.");
+            }
+            if (type === "wallet_strk20InvokeTransaction") {
+              runtime.__invokeCalls += 1;
               runtime.__preparedAmount = params?.actions?.[0]?.amount;
               if (runtime.__preparedAmount !== "0x6f05b59d3b200000") {
                 return Promise.reject({
@@ -93,18 +100,12 @@ test("explains an unregistered private balance request after explicit consent", 
                 message: "An error occurred (UNKNOWN_ERROR)",
                 data: {
                   error: {
-                    code: "PROVER_PREPARE_FAILED",
+                    code: "PROVER_FAILED",
                     message:
-                      "The proving service could not prepare this action.",
+                      "The proving service could not finish this action.",
                   },
                 },
               });
-            }
-            if (type === "wallet_strk20InvokeTransaction") {
-              runtime.__invokeCalls += 1;
-              throw new Error(
-                "Submission must not run after preparation fails.",
-              );
             }
             throw new Error(`Unexpected wallet request: ${type}`);
           },
@@ -190,11 +191,11 @@ test("explains an unregistered private balance request after explicit consent", 
     .click();
   await expect(page.getByText("Safe failure details")).toBeVisible();
   await expect(
-    page.getByText("Proof preparation", { exact: true }),
+    page.getByText("Wallet submission", { exact: true }),
   ).toBeVisible();
   await expect(page.getByText("163", { exact: true })).toBeVisible();
   await expect(
-    page.getByText("The proving service could not prepare this action."),
+    page.getByText("The proving service could not finish this action."),
   ).toBeVisible();
   await expect(
     page.getByText("No hash returned by wallet", { exact: true }),
@@ -212,6 +213,12 @@ test("explains an unregistered private balance request after explicit consent", 
   expect(
     await page.evaluate(
       () => (window as typeof window & { __invokeCalls: number }).__invokeCalls,
+    ),
+  ).toBe(1);
+  expect(
+    await page.evaluate(
+      () =>
+        (window as typeof window & { __prepareCalls: number }).__prepareCalls,
     ),
   ).toBe(0);
   await page.screenshot({

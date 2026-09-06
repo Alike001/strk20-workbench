@@ -135,10 +135,7 @@ const repositoryGuides = [
 
 const walletApiExample = `const actions: STRK20_ACTION[] = [mappedReviewedAction];
 
-// Prepare and simulate through the connected privacy wallet.
-await account.strk20PrepareInvoke(actions, true);
-
-// This second request can create a real transaction.
+// The wallet owns first-use registration, proving and approval.
 const { transaction_hash } =
   await account.strk20InvokeTransaction(actions);
 

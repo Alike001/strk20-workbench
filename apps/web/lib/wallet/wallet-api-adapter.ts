@@ -257,29 +257,13 @@ export class WalletApiAdapter implements LabAdapter {
       payload: { walletName: this.#walletName, action: action.type },
     });
 
+    let transactionHash: string;
     try {
       options.onEvent({
         type: "proof.preparing",
         proofKind: "real",
-        payload: { simulate: true },
+        payload: { combinedWalletFlow: true },
       });
-      await this.#account.strk20PrepareInvoke(walletActions, true);
-      assertNotAborted(options.signal);
-    } catch (cause) {
-      if (options.signal?.aborted || isCancellation(cause)) {
-        return {
-          status: "cancelled",
-          reason: "Wallet proof preparation was cancelled.",
-        };
-      }
-      return {
-        status: "failed",
-        error: this.#classifyError(cause, "preparing-proof"),
-      };
-    }
-
-    let transactionHash: string;
-    try {
       const submitted =
         await this.#account.strk20InvokeTransaction(walletActions);
       transactionHash = submitted.transaction_hash;
@@ -313,7 +297,13 @@ export class WalletApiAdapter implements LabAdapter {
       if (isCancellation(cause)) {
         return {
           status: "cancelled",
-          reason: "Wallet submission was cancelled.",
+          reason: "Wallet proof or submission approval was cancelled.",
+        };
+      }
+      if (isKnownPreSubmissionError(cause)) {
+        return {
+          status: "failed",
+          error: this.#classifyError(cause, "preparing-proof"),
         };
       }
       if (submissionMayBeUncertain(cause)) {
@@ -604,6 +594,21 @@ function isCancellation(cause: unknown): boolean {
     message.includes("reject") ||
     message.includes("denied") ||
     message.includes("cancel")
+  );
+}
+
+function isKnownPreSubmissionError(cause: unknown): boolean {
+  const message = safeMessage(cause).toLowerCase();
+  const rpcCode = walletRpcErrorCode(cause);
+  return (
+    [111, 114, 118, 119, 120, 162].includes(rpcCode ?? -1) ||
+    message.includes("not_registered") ||
+    message.includes("not registered") ||
+    message.includes("insufficient_private_balance") ||
+    message.includes("insufficient private balance") ||
+    message.includes("invalid_request_payload") ||
+    message.includes("invalid request payload") ||
+    message.includes("api_version_not_supported")
   );
 }
 

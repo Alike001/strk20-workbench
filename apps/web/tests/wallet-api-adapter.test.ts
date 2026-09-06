@@ -274,7 +274,7 @@ describe("WalletApiAdapter safety boundaries", () => {
     ).toBe("blocked");
   });
 
-  it("prepares, submits, verifies, and emits normalized progress", async () => {
+  it("lets the wallet prove, submit, verify, and emit normalized progress", async () => {
     const wallet = account();
     const check = verifier();
     const events: string[] = [];
@@ -290,10 +290,7 @@ describe("WalletApiAdapter safety boundaries", () => {
       proofKind: "real",
       transactionHash: TX_HASH,
     });
-    expect(wallet.strk20PrepareInvoke).toHaveBeenCalledWith(
-      [{ type: "deposit", token: TOKEN, amount: "0x19" }],
-      true,
-    );
+    expect(wallet.strk20PrepareInvoke).not.toHaveBeenCalled();
     expect(wallet.strk20InvokeTransaction).toHaveBeenCalledWith([
       { type: "deposit", token: TOKEN, amount: "0x19" },
     ]);
@@ -309,7 +306,7 @@ describe("WalletApiAdapter safety boundaries", () => {
   it("treats wallet rejection as cancellation and prover pressure as retryable", async () => {
     const rejected = createAdapter({
       account: account({
-        strk20PrepareInvoke: vi
+        strk20InvokeTransaction: vi
           .fn()
           .mockRejectedValue(new Error("User rejected request")),
       }),
@@ -320,7 +317,7 @@ describe("WalletApiAdapter safety boundaries", () => {
 
     const busy = createAdapter({
       account: account({
-        strk20PrepareInvoke: vi
+        strk20InvokeTransaction: vi
           .fn()
           .mockRejectedValue(new Error("Prover busy: 429")),
       }),
@@ -336,7 +333,7 @@ describe("WalletApiAdapter safety boundaries", () => {
   it("classifies a Wallet API payload rejection as an invalid action", async () => {
     const adapter = createAdapter({
       account: account({
-        strk20PrepareInvoke: vi
+        strk20InvokeTransaction: vi
           .fn()
           .mockRejectedValue(
             new Error("An error occurred (INVALID_REQUEST_PAYLOAD)"),
@@ -358,6 +355,27 @@ describe("WalletApiAdapter safety boundaries", () => {
           "The wallet rejected the STRK20 request encoding or action shape.",
       },
     });
+  });
+
+  it("keeps a combined-flow registration rejection pre-submission", async () => {
+    const wallet = account({
+      strk20InvokeTransaction: vi.fn().mockRejectedValue({
+        code: 118,
+        message: "An error occurred (NOT_REGISTERED)",
+      }),
+    });
+
+    await expect(
+      createAdapter({ account: wallet }).execute(shield, {
+        idempotencyKey: "not-registered",
+        onEvent: vi.fn(),
+      }),
+    ).resolves.toMatchObject({
+      status: "failed",
+      error: { code: "NOT_REGISTERED", phase: "preparing-proof" },
+    });
+    expect(wallet.strk20PrepareInvoke).not.toHaveBeenCalled();
+    expect(wallet.strk20InvokeTransaction).toHaveBeenCalledOnce();
   });
 
   it("never resubmits while a submitted transaction remains uncertain", async () => {

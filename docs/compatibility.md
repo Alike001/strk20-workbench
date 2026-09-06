@@ -53,6 +53,8 @@ The first mainnet `wallet_strk20PrepareInvoke` probe stopped before submission w
 
 This corrected encoding still requires one Ready X mainnet retest before prepare/invoke compatibility is marked complete.
 
+That retest reached the next valid precondition: simulated preparation returned `NOT_REGISTERED`, again with no transaction hash. The official STRK20 starter does not put `strk20PrepareInvoke` in front of a normal shield. It calls `strk20InvokeTransaction` directly so the wallet owns first-use registration, proving, approval, and submission as one combined flow. The Workbench now follows that route. Simulated preparation remains useful as a separate preview tool after registration, but it is not a gate in front of the first shield.
+
 ## Compatibility gate partially complete
 
 Before real-mode UI is treated as fully supported, the team must still record:

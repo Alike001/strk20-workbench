@@ -81,12 +81,12 @@ describe("Documentation page", () => {
     expect(html).toContain("Keeps keys, notes, discovery, proving, signing");
   });
 
-  it("uses the same prepare-then-invoke Wallet API flow as the adapter", () => {
+  it("uses the same combined Wallet API flow as the adapter", () => {
     const html = renderPage();
 
     expect(html).toContain("Small Wallet API example");
-    expect(html).toContain("account.strk20PrepareInvoke(actions, true)");
     expect(html).toContain("account.strk20InvokeTransaction(actions)");
+    expect(html).toContain("first-use registration, proving and approval");
     expect(html).toContain("transaction_hash");
     expect(html).toContain("A returned hash is not proof");
     expect(html).not.toContain("wallet_strk20Submit");
