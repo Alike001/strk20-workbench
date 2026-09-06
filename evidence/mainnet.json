@@ -1,3 +1,9 @@
 {
-  "records": []
+  "records": [
+    {
+      "action": "shield",
+      "transaction_hash": "0x039372b04a863fd5cd016f2715034dc6286b7c61f63abe96199ddf65b35da6c0",
+      "created_at": "2026-09-06T18:02:00.000Z"
+    }
+  ]
 }
