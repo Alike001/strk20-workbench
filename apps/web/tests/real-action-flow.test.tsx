@@ -127,18 +127,46 @@ describe("real action flow", () => {
     ).rejects.toThrow(/inconsistent/i);
   });
 
-  it("shows the expected cost and warns when the pool fee exceeds the amount", () => {
+  it("subtracts the live fee from a shield and blocks a zero-private result", () => {
     const fee = { amount: 6_000_000_000_000_000_000n, label: "6 STRK" };
 
-    expect(buildPoolFeePreview("0.01", fee)).toEqual({
-      totalLabel: "6.01 STRK",
+    expect(buildPoolFeePreview("1", fee, "shield")).toEqual({
+      costLabel: "Public STRK leaving wallet",
+      costValue: "1 STRK",
+      outcomeLabel: "Expected private STRK received",
+      outcomeValue: "0 STRK",
+      note: "The 6 STRK pool fee is reserved from the shield amount, not added on top.",
+      blocksReview: true,
       warning:
-        "The 6 STRK pool fee is greater than your 0.01 STRK amount. Review the cost before continuing.",
+        "Enter more than 6 STRK. This amount would leave 0 STRK private after the pool fee.",
     });
-    expect(buildPoolFeePreview("12", fee)).toEqual({
-      totalLabel: "18 STRK",
+    expect(buildPoolFeePreview("8", fee, "shield")).toEqual({
+      costLabel: "Public STRK leaving wallet",
+      costValue: "8 STRK",
+      outcomeLabel: "Expected private STRK received",
+      outcomeValue: "2 STRK",
+      note: "The 6 STRK pool fee is reserved from the shield amount, not added on top.",
+      blocksReview: false,
     });
     expect(buildPoolFeePreview("", fee)).toBeUndefined();
+  });
+
+  it("adds the live fee to private transfer and withdrawal requirements", () => {
+    const fee = { amount: 6_000_000_000_000_000_000n, label: "6 STRK" };
+
+    expect(buildPoolFeePreview("1", fee, "private-transfer")).toEqual({
+      costLabel: "Private STRK balance required",
+      costValue: "7 STRK",
+      outcomeLabel: "Private recipient receives",
+      outcomeValue: "1 STRK",
+      note: "The 6 STRK pool fee is charged from your private balance in addition to this amount.",
+      blocksReview: false,
+    });
+    expect(buildPoolFeePreview("1", fee, "withdraw")).toMatchObject({
+      costValue: "7 STRK",
+      outcomeLabel: "Public recipient receives",
+      outcomeValue: "1 STRK",
+    });
   });
 
   it("creates exact base-unit wallet actions from human amounts", () => {

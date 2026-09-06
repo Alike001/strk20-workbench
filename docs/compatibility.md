@@ -57,6 +57,8 @@ The direct Ready X call then returned the same `NOT_REGISTERED` result before sh
 
 The mainnet receipt `0x04816dbb3ec04d21cc5da879358e485afdbfe52a3d8f6b8bf4a678003b6e0278` independently confirms the wallet-owned first-use shape. It succeeded at block `13876176` and the official pool emitted `ViewingKeySet`, `Deposit`, `EncNoteCreated`, and the fee `Withdrawal` in that one transaction. Workbench never derives, requests, or stores the viewing key.
 
+A subsequent Ready X `5.33.9` review exposed the shield fee presentation precisely: a requested 1 STRK deposit displayed `-1.0 STRK`, `+0.0 [STRK]`, and `6.0 STRK reserved from your balance for the privacy fee`. The user rejected before submission, so no funds moved and no transaction hash exists. Workbench now models shield input as the gross public deposit, subtracts the live pool fee to preview the expected private increase, and prevents review while the deposit is less than or equal to that fee. Transfer and withdrawal previews continue to add the fee to the private balance requirement.
+
 ## Compatibility gate partially complete
 
 Before real-mode UI is treated as fully supported, the team must still record:

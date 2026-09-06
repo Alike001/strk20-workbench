@@ -190,8 +190,26 @@ test("guides an unregistered account through wallet-owned first-use setup", asyn
 
   await expect(page.getByText("No transaction was started.")).toBeVisible();
 
-  await page.getByRole("textbox", { name: "Amount in STRK" }).fill("8");
+  const shieldAmount = page.getByRole("textbox", {
+    name: "Total public STRK to deposit",
+  });
+  await shieldAmount.fill("1");
+  await expect(
+    page.getByText("Expected private STRK received", { exact: true }),
+  ).toBeVisible();
+  await expect(page.getByText("0 STRK", { exact: true })).toBeVisible();
+  await expect(
+    page.getByText("Enter more than 6 STRK", { exact: false }),
+  ).toBeVisible();
+  await expect(
+    page.getByRole("button", { name: "Review real action" }),
+  ).toBeDisabled();
+
+  await shieldAmount.fill("8");
+  await expect(page.getByText("2 STRK", { exact: true })).toBeVisible();
   await page.getByRole("button", { name: "Review real action" }).click();
+  await expect(page.getByText("Expected private increase")).toBeVisible();
+  await expect(page.getByText("2 STRK", { exact: true })).toBeVisible();
   await expect(
     page.getByRole("button", { name: "Continue to wallet approvals" }),
   ).toBeVisible();

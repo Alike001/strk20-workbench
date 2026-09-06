@@ -158,7 +158,7 @@ describe("ActionReviewPanel", () => {
   });
 
   it.each([
-    ["shield", "shield 25 STRK into the private pool", "depositing account"],
+    ["shield", "deposit 25 STRK", "depositing account"],
     [
       "private-transfer",
       "send 25 STRK privately to Bob",
@@ -176,6 +176,18 @@ describe("ActionReviewPanel", () => {
     expect(html).toContain(fact);
     expect(html).toContain("Private inside the pool");
     expect(html).toContain("Remains public");
+  });
+
+  it("shows the gross deposit and expected private increase for a shield", () => {
+    const html = render({
+      action: "shield",
+      expectedPrivateAmount: "19 STRK",
+    });
+
+    expect(html).toContain("Public deposit");
+    expect(html).toContain("Expected private increase");
+    expect(html).toContain("19 STRK");
+    expect(html).toContain("After the pool fee");
   });
 
   it("keeps confirm and cancel behavior caller-controlled", () => {

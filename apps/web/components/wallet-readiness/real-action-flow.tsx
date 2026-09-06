@@ -62,7 +62,12 @@ export type PoolFeeQuote = Readonly<{
 }>;
 
 export type PoolFeePreview = Readonly<{
-  totalLabel: string;
+  costLabel: string;
+  costValue: string;
+  outcomeLabel: string;
+  outcomeValue: string;
+  note: string;
+  blocksReview: boolean;
   warning?: string;
 }>;
 
@@ -210,7 +215,7 @@ export function RealActionFlow({
   const busy = isActivePhase(state.phase);
   const feePreview =
     poolFee.status === "ready"
-      ? buildPoolFeePreview(draft.amount, poolFee.quote)
+      ? buildPoolFeePreview(draft.amount, poolFee.quote, draft.action)
       : undefined;
 
   return (
@@ -291,7 +296,7 @@ export function RealActionFlow({
           </label>
 
           <label>
-            <span>Amount in STRK</span>
+            <span>{amountInputLabel(draft.action)}</span>
             <input
               autoComplete="off"
               inputMode="decimal"
@@ -316,12 +321,14 @@ export function RealActionFlow({
               {feePreview ? (
                 <>
                   <div>
-                    <span>Amount + pool fee</span>
-                    <strong>{feePreview.totalLabel}</strong>
+                    <span>{feePreview.costLabel}</span>
+                    <strong>{feePreview.costValue}</strong>
                   </div>
-                  <small>
-                    Your wallet shows any additional charges before approval.
-                  </small>
+                  <div>
+                    <span>{feePreview.outcomeLabel}</span>
+                    <strong>{feePreview.outcomeValue}</strong>
+                  </div>
+                  <small>{feePreview.note}</small>
                 </>
               ) : (
                 <small>Enter an amount to see the expected STRK cost.</small>
@@ -368,7 +375,11 @@ export function RealActionFlow({
             </p>
             <button
               type="submit"
-              disabled={poolFee.status !== "ready" || !feePreview}
+              disabled={
+                poolFee.status !== "ready" ||
+                !feePreview ||
+                feePreview.blocksReview
+              }
             >
               Review real action
             </button>
@@ -401,12 +412,17 @@ export function RealActionFlow({
             networkLabel="Starknet Mainnet"
             onCancel={closeOrCancel}
             onConfirm={() => void controller.confirm()}
-            poolFee={`${poolFee.status === "ready" ? poolFee.quote.label : "Unavailable"} · confirm again in your wallet`}
+            poolFee={reviewPoolFeeLabel(reviewedDraft.action, poolFee)}
             recipientAddress={reviewedDraft.recipient || undefined}
             status={displayStatus(state.phase)}
             tokenAddress={STRK_TOKEN}
             tokenSymbol="STRK"
             transactionHash={state.transactionHash}
+            expectedPrivateAmount={
+              reviewedDraft.action === "shield" && feePreview
+                ? feePreview.outcomeValue
+                : undefined
+            }
           />
 
           {state.message ? (
@@ -552,6 +568,7 @@ export async function readPoolFee(
 export function buildPoolFeePreview(
   amountInput: string,
   fee: PoolFeeQuote,
+  action: RealAction = "shield",
 ): PoolFeePreview | undefined {
   let amount: bigint;
   try {
@@ -560,14 +577,49 @@ export function buildPoolFeePreview(
     return undefined;
   }
 
+  const amountLabel = formatTokenAmount(amount, STRK);
+  if (action === "shield") {
+    const privateAmount = amount > fee.amount ? amount - fee.amount : 0n;
+    const blocksReview = amount <= fee.amount;
+    return {
+      costLabel: "Public STRK leaving wallet",
+      costValue: amountLabel,
+      outcomeLabel: "Expected private STRK received",
+      outcomeValue: formatTokenAmount(privateAmount, STRK),
+      note: `The ${fee.label} pool fee is reserved from the shield amount, not added on top.`,
+      blocksReview,
+      ...(blocksReview
+        ? {
+            warning: `Enter more than ${fee.label}. This amount would leave 0 STRK private after the pool fee.`,
+          }
+        : {}),
+    };
+  }
+
   return {
-    totalLabel: formatTokenAmount(amount + fee.amount, STRK),
-    ...(fee.amount > amount
-      ? {
-          warning: `The ${fee.label} pool fee is greater than your ${formatTokenAmount(amount, STRK)} amount. Review the cost before continuing.`,
-        }
-      : {}),
+    costLabel: "Private STRK balance required",
+    costValue: formatTokenAmount(amount + fee.amount, STRK),
+    outcomeLabel:
+      action === "private-transfer"
+        ? "Private recipient receives"
+        : "Public recipient receives",
+    outcomeValue: amountLabel,
+    note: `The ${fee.label} pool fee is charged from your private balance in addition to this amount.`,
+    blocksReview: false,
   };
+}
+
+function amountInputLabel(action: RealAction): string {
+  if (action === "shield") return "Total public STRK to deposit";
+  if (action === "private-transfer") return "Private STRK to send";
+  return "Private STRK to withdraw";
+}
+
+function reviewPoolFeeLabel(action: RealAction, poolFee: PoolFeeState): string {
+  if (poolFee.status !== "ready") return "Unavailable";
+  return action === "shield"
+    ? `${poolFee.quote.label} · deducted from this deposit`
+    : `${poolFee.quote.label} · charged from private balance`;
 }
 
 function FailureDiagnostic({

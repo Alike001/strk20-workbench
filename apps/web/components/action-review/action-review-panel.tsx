@@ -22,6 +22,7 @@ export interface ActionReviewPanelProps {
   tokenSymbol: string;
   tokenAddress: string;
   amount: string;
+  expectedPrivateAmount?: string;
   recipientLabel?: string;
   recipientAddress?: string;
   networkLabel: string;
@@ -51,8 +52,8 @@ interface StatusCopy {
 const actionCopy: Record<RealAction, ActionCopy> = {
   shield: {
     label: "Shield",
-    summary: ({ amount, tokenSymbol }) =>
-      `You are asking your wallet to shield ${amount} ${tokenSymbol} into the private pool.`,
+    summary: ({ amount, tokenSymbol, expectedPrivateAmount }) =>
+      `You are asking your wallet to deposit ${amount} ${tokenSymbol}. After the pool fee, about ${expectedPrivateAmount ?? "the wallet-reviewed amount"} becomes private.`,
     privateFact:
       "Your resulting in-pool balance, note contents, and how that value is later spent.",
     publicFact:
@@ -148,6 +149,7 @@ export function ActionReviewPanel(props: ActionReviewPanelProps): JSX.Element {
     tokenSymbol,
     tokenAddress,
     amount,
+    expectedPrivateAmount,
     recipientLabel,
     recipientAddress,
     networkLabel,
@@ -201,7 +203,16 @@ export function ActionReviewPanel(props: ActionReviewPanelProps): JSX.Element {
               value={tokenSymbol}
               technicalValue={tokenAddress}
             />
-            <ReviewFact label="Amount" value={`${amount} ${tokenSymbol}`} />
+            <ReviewFact
+              label={action === "shield" ? "Public deposit" : "Amount"}
+              value={`${amount} ${tokenSymbol}`}
+            />
+            {action === "shield" && expectedPrivateAmount ? (
+              <ReviewFact
+                label="Expected private increase"
+                value={expectedPrivateAmount}
+              />
+            ) : null}
             <ReviewFact
               label="Recipient"
               value={

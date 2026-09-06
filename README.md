@@ -31,6 +31,8 @@ No sandbox result will be represented as a genuine zero-knowledge proof or mainn
 
 Wallet API `0.10.3` does not give a dapp a registration method. A new account must shield once from its privacy-enabled wallet's own screen, where the wallet keeps the viewing key and publishes registration with the shield transaction. Workbench detects `NOT_REGISTERED`, explains that one-time step, and lets the user recheck before returning to the reviewed action. It never asks for a viewing key and never retries a failed action automatically.
 
+The live pool fee is read on every visit. For a shield, Ready X reserves that fee from the public deposit, so Workbench shows both the gross public debit and the expected net private increase and blocks deposits that would leave zero private STRK. For transfers and withdrawals, it shows the requested output plus the additional private balance required for the fee.
+
 ## Documentation & Contributing
 
 - [`CONTRIBUTING.md`](./CONTRIBUTING.md) — Contribution workflow, pull request guidelines, and safety boundaries.

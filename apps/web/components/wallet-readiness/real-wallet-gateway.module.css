@@ -427,6 +427,14 @@
   cursor: pointer;
 }
 
+.formBoundary button:disabled {
+  border-color: var(--border-strong);
+  color: var(--muted);
+  background: #1a1a1a;
+  cursor: not-allowed;
+  opacity: 0.72;
+}
+
 .actionForm > p {
   grid-column: 1 / -1;
   margin: 0;
