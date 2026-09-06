@@ -174,8 +174,40 @@ export class RealActionController {
     if (this.#state.phase !== "uncertain" || !this.#state.transactionHash) {
       throw new Error("There is no submitted transaction to check.");
     }
-    const transactionHash = this.#state.transactionHash;
-    this.#set({ ...this.#state, phase: "confirming" });
+    return this.#checkTransactionHash(this.#state.transactionHash, signal);
+  }
+
+  async recoverSubmittedTransaction(
+    transactionHash: string,
+    signal?: AbortSignal,
+  ): Promise<RealActionState> {
+    if (this.#state.phase !== "uncertain") {
+      throw new Error("There is no uncertain transaction to recover.");
+    }
+    const candidate = transactionHash.trim();
+    if (!/^0x[0-9a-fA-F]{1,64}$/.test(candidate)) {
+      throw new TypeError("Enter a valid Starknet transaction hash.");
+    }
+    if (
+      this.#state.transactionHash &&
+      BigInt(this.#state.transactionHash) !== BigInt(candidate)
+    ) {
+      throw new Error(
+        "The supplied hash does not match the transaction already returned by the wallet.",
+      );
+    }
+    return this.#checkTransactionHash(candidate, signal);
+  }
+
+  async #checkTransactionHash(
+    transactionHash: string,
+    signal?: AbortSignal,
+  ): Promise<RealActionState> {
+    this.#set({
+      ...this.#state,
+      phase: "confirming",
+      transactionHash,
+    });
     let receipt: TransactionStatus;
     try {
       receipt = await this.#adapter.getTransactionStatus(

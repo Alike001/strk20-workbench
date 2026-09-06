@@ -169,6 +169,44 @@ describe("RealActionController", () => {
     expect(controller.dismiss()).toEqual({ phase: "idle" });
   });
 
+  it("recovers an uncertain submission when the wallet omitted its hash", async () => {
+    const wallet = adapter({
+      result: { status: "uncertain" },
+      receipt: { status: "succeeded", transactionHash: "0xabc" },
+    });
+    const controller = new RealActionController({ adapter: wallet });
+    controller.review(action, "transfer-missing-hash");
+    await controller.confirm();
+
+    await expect(controller.checkSubmittedTransaction()).rejects.toThrow(
+      /no submitted transaction/i,
+    );
+    await expect(
+      controller.recoverSubmittedTransaction(" 0xabc "),
+    ).resolves.toMatchObject({
+      phase: "succeeded",
+      transactionHash: "0xabc",
+    });
+    expect(wallet.execute).toHaveBeenCalledTimes(1);
+    expect(wallet.getTransactionStatus).toHaveBeenCalledWith(
+      "0xabc",
+      undefined,
+    );
+  });
+
+  it("rejects an invalid recovery hash without leaving uncertainty", async () => {
+    const controller = new RealActionController({
+      adapter: adapter({ result: { status: "uncertain" } }),
+    });
+    controller.review(action, "transfer-invalid-recovery-hash");
+    await controller.confirm();
+
+    await expect(
+      controller.recoverSubmittedTransaction("not-a-hash"),
+    ).rejects.toThrow(/valid Starknet transaction hash/i);
+    expect(controller.getState()).toMatchObject({ phase: "uncertain" });
+  });
+
   it("does not dismiss an uncertain submitted action", async () => {
     const controller = new RealActionController({
       adapter: adapter({

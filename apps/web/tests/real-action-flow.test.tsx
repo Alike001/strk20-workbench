@@ -5,6 +5,7 @@ import type { LabAdapter } from "@strk20-workbench/lab-core";
 
 import {
   RealActionFlow,
+  MissingTransactionHashRecovery,
   buildSafeFailureDiagnostic,
   buildPoolFeePreview,
   createReviewedAction,
@@ -43,6 +44,23 @@ describe("real action flow", () => {
       (adapter as unknown as Pick<LabAdapter, "execute">).execute,
     ).not.toHaveBeenCalled();
     expect(adapter.readPrivateBalances).not.toHaveBeenCalled();
+  });
+
+  it("shows a safe manual receipt path when a wallet omits the hash", () => {
+    const html = renderToStaticMarkup(
+      <MissingTransactionHashRecovery
+        transactionHash=""
+        walletName="Ready X"
+        onChange={() => undefined}
+        onCheck={() => undefined}
+      />,
+    );
+
+    expect(html).toContain("The wallet did not return a hash to Workbench.");
+    expect(html).toContain("find the latest Shield in Activity");
+    expect(html).toContain("Do not make another shield.");
+    expect(html).toContain("Check this transaction — do not resubmit");
+    expect(html).toContain("cannot move funds");
   });
 
   it("reads and formats only the requested private STRK balance", async () => {

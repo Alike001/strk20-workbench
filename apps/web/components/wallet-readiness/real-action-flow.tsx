@@ -108,6 +108,8 @@ export function RealActionFlow({
   const [registrationCheck, setRegistrationCheck] =
     useState<RegistrationCheckState>({ status: "idle" });
   const [registrationConfirmed, setRegistrationConfirmed] = useState(false);
+  const [recoveryHash, setRecoveryHash] = useState("");
+  const [recoveryHashError, setRecoveryHashError] = useState<string>();
   const balanceRequest = useRef<AbortController | undefined>(undefined);
   const controller = useMemo(
     () => new RealActionController({ adapter, onChange: setState }),
@@ -209,6 +211,19 @@ export function RealActionFlow({
   function closeOrCancel() {
     if (state.phase === "review") controller.cancelReview();
     else controller.dismiss();
+  }
+
+  async function checkRecoveredTransaction() {
+    try {
+      setRecoveryHashError(undefined);
+      await controller.recoverSubmittedTransaction(recoveryHash);
+    } catch (error) {
+      setRecoveryHashError(
+        error instanceof Error
+          ? error.message
+          : "Enter the Starknet transaction hash shown in Ready X.",
+      );
+    }
   }
 
   const showingReview = state.phase !== "idle" && reviewedDraft;
@@ -454,7 +469,7 @@ export function RealActionFlow({
             </>
           ) : null}
 
-          {state.phase === "uncertain" ? (
+          {state.phase === "uncertain" && state.transactionHash ? (
             <button
               className={styles.recoveryAction}
               type="button"
@@ -462,6 +477,19 @@ export function RealActionFlow({
             >
               Check this transaction — do not resubmit
             </button>
+          ) : null}
+
+          {state.phase === "uncertain" && !state.transactionHash ? (
+            <MissingTransactionHashRecovery
+              error={recoveryHashError}
+              transactionHash={recoveryHash}
+              onChange={(value) => {
+                setRecoveryHash(value);
+                setRecoveryHashError(undefined);
+              }}
+              onCheck={() => void checkRecoveredTransaction()}
+              walletName={walletName}
+            />
           ) : null}
 
           {state.phase === "failed" ? (
@@ -478,6 +506,56 @@ export function RealActionFlow({
         </div>
       )}
     </section>
+  );
+}
+
+export function MissingTransactionHashRecovery({
+  error,
+  onChange,
+  onCheck,
+  transactionHash,
+  walletName,
+}: Readonly<{
+  error?: string;
+  onChange: (value: string) => void;
+  onCheck: () => void;
+  transactionHash: string;
+  walletName: string;
+}>) {
+  return (
+    <form
+      className={styles.transactionRecovery}
+      onSubmit={(event) => {
+        event.preventDefault();
+        onCheck();
+      }}
+    >
+      <span>Transaction hash needed</span>
+      <h4>The wallet did not return a hash to Workbench.</h4>
+      <p>
+        Submission may still have happened. Open {walletName}, find the latest
+        Shield in Activity, open its details, and copy the 0x transaction hash.
+        Do not make another shield.
+      </p>
+      <label>
+        <span>Transaction hash from {walletName}</span>
+        <input
+          autoComplete="off"
+          inputMode="text"
+          placeholder="0x…"
+          required
+          spellCheck="false"
+          value={transactionHash}
+          onChange={(event) => onChange(event.target.value.trim())}
+        />
+      </label>
+      {error ? <p role="alert">{error}</p> : null}
+      <button type="submit">Check this transaction — do not resubmit</button>
+      <small>
+        This only checks the public Starknet receipt. It cannot move funds or
+        access wallet secrets.
+      </small>
+    </form>
   );
 }
 

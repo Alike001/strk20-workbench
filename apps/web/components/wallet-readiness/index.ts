@@ -9,6 +9,7 @@ export {
   readinessFrom,
 } from "./real-wallet-gateway";
 export {
+  MissingTransactionHashRecovery,
   RealActionFlow,
   buildSafeFailureDiagnostic,
   buildPoolFeePreview,
