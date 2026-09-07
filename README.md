@@ -2,7 +2,7 @@
 
 Add private transfers to a Starknet application with reusable UI building blocks, a framework-neutral flow engine, and a safe visual playground.
 
-[Open the live Workbench](https://strk20-workbench.vercel.app) · [Try the Sandbox](https://strk20-workbench.vercel.app/workbench) · [Inspect verified evidence](https://strk20-workbench.vercel.app/evidence)
+[Open the live Workbench](https://strk20-workbench.vercel.app) · [Watch the demo](https://youtu.be/1c3Mp3ncegM) · [Try the Sandbox](https://strk20-workbench.vercel.app/workbench) · [Inspect verified evidence](https://strk20-workbench.vercel.app/evidence)
 
 ## What is this?
 
@@ -25,7 +25,7 @@ The project deliberately separates learning from real execution. The Sandbox use
 | Reusable UI                | Workspace package with Shield, PrivateTransfer, Withdraw, FlowProgress, and PrivacyFacts |
 | Core engine                | Framework-neutral TypeScript state machine and adapter contracts                         |
 | Custom contract            | None; the project integrates with the official STRK20 pool through the wallet API        |
-| Demo video                 | Pending public video URL in `strk20.json`                                                |
+| Demo video                 | Published at [youtu.be/1c3Mp3ncegM](https://youtu.be/1c3Mp3ncegM)                        |
 
 ## Try it without a wallet
 
