@@ -102,8 +102,8 @@ export function ComponentsPage(): JSX.Element {
             <strong>React package · Workspace ready</strong>
           </div>
           <p>
-            The reusable package and Sandbox playground work today. Supported
-            wallet execution is the next milestone.
+            The reusable package and Sandbox playground work today. Ready X
+            execution is verified on Starknet Mainnet.
           </p>
           <dl className={styles.productLayers}>
             <div>
@@ -215,8 +215,8 @@ import "@strk20-workbench/react/styles.css";
 />`}</code>
           </pre>
           <p>
-            Workspace-only today. Sandbox is simulated; supported wallet mode is
-            the next milestone.
+            Workspace-only today. Sandbox is simulated; real actions use the
+            verified Ready X Wallet API path.
           </p>
         </div>
       </section>
@@ -232,9 +232,9 @@ import "@strk20-workbench/react/styles.css";
           <div>
             <strong>Know what is real.</strong>
             <p>
-              Sandbox uses fake tokens and simulated results. Real mode will use
-              a supported STRK20 wallet for genuine network actions; that path
-              is still in development.
+              Sandbox uses fake tokens and simulated results. Real mode uses
+              Ready X for wallet-owned proofs and genuine Starknet Mainnet
+              actions, then verifies public receipts separately.
             </p>
           </div>
         </div>

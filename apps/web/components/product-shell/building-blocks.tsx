@@ -79,8 +79,8 @@ export function BuildingBlocks() {
 />`}</code>
           </pre>
           <p>
-            Available in this repository today. Sandbox is simulated; supported
-            wallet mode is the next milestone.
+            Available in this repository today. Sandbox is simulated; real
+            actions use the verified Ready X Wallet API path.
           </p>
         </div>
       </div>

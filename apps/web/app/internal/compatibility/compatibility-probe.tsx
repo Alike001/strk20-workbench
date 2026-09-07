@@ -89,7 +89,7 @@ export function CompatibilityProbe() {
           <p className="eyebrow">Internal compatibility spike</p>
           <h1 id="probe-title">Can this wallet speak STRK20?</h1>
         </div>
-        <span className="candidate-badge">Candidate · not production</span>
+        <span className="candidate-badge">Diagnostic · no transaction</span>
       </div>
 
       <p className="probe-intro">

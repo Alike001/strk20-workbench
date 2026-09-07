@@ -29,5 +29,9 @@ describe("Components page", () => {
 
     expect(html).not.toContain("<code>npm install");
     expect(html).toContain("Workspace-only today");
+    expect(html).toContain("Ready X execution is verified");
+    expect(html).toContain("verified Ready X Wallet API path");
+    expect(html).not.toContain("next milestone");
+    expect(html).not.toContain("still in development");
   });
 });

@@ -141,7 +141,7 @@ pnpm build
 
 ### 1. Honest Privacy Simulation
 
-The Workbench includes both an in-browser sandbox and an eventual mainnet wallet route.
+The Workbench includes both an in-browser Sandbox and a verified Ready X mainnet wallet route.
 
 - **Sandbox mode:** Always simulated. Used for learning and visualizing the lifecycle of privacy transactions.
 - **Rules on terminology:** Never document, label, or market sandbox operations as:
