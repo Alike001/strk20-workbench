@@ -79,7 +79,7 @@
 
 .primaryAction {
   border: 1px solid var(--accent);
-  background: var(--accent);
+  background: var(--accent-fill);
   color: #fff;
 }
 
@@ -127,7 +127,7 @@
   right: 0;
   left: 0;
   height: 3px;
-  background: var(--accent);
+  background: var(--accent-fill);
   content: "";
 }
 
@@ -507,7 +507,7 @@
 .truthBoundary > a {
   flex: none;
   border: 1px solid var(--accent);
-  background: var(--accent);
+  background: var(--accent-fill);
   color: #fff;
 }
 

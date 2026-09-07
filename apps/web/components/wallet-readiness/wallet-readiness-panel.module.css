@@ -31,7 +31,7 @@
 .panel[data-state="discovering"] .stateMark,
 .panel[data-state="connecting"] .stateMark,
 .panel[data-state="wrong-network"] .stateMark {
-  background: var(--accent);
+  background: var(--accent-fill);
 }
 
 .panel[data-state="ready"] .stateMark {
@@ -144,7 +144,7 @@
 
 .primaryAction {
   color: #fff;
-  background: var(--accent);
+  background: var(--accent-fill);
   border-color: var(--accent);
 }
 

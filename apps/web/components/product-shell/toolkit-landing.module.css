@@ -75,7 +75,7 @@
 
 .primaryButton {
   border-color: var(--accent);
-  background: var(--accent);
+  background: var(--accent-fill);
   color: #fff;
 }
 
@@ -160,7 +160,7 @@
 }
 
 .codeMuted {
-  color: #555;
+  color: var(--muted-soft);
 }
 
 .codeKeyword {
@@ -216,7 +216,7 @@
   width: 1px;
   height: 0.8rem;
   margin: 0 auto;
-  background: var(--accent);
+  background: var(--accent-fill);
 }
 
 .actionNodes {
@@ -257,7 +257,7 @@
   width: 0.42rem;
   height: 0.42rem;
   border-radius: 50%;
-  background: var(--accent);
+  background: var(--accent-fill);
 }
 
 .packageRail {
@@ -457,7 +457,7 @@
   gap: 1rem;
   border-bottom: 1px solid var(--border);
   padding: 1.2rem 1.3rem;
-  opacity: 0.48;
+  opacity: 1;
 }
 
 .flowPreview li[aria-current="step"] {

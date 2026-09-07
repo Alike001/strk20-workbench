@@ -121,7 +121,7 @@
 .primaryAction,
 .inlineAction {
   border-color: var(--accent);
-  background: var(--accent);
+  background: var(--accent-fill);
   color: #fff;
 }
 
@@ -180,7 +180,7 @@
   right: -1px;
   left: -1px;
   height: 3px;
-  background: var(--accent);
+  background: var(--accent-fill);
   content: "";
 }
 
@@ -471,7 +471,7 @@
   left: 0;
   width: 0.35rem;
   height: 1px;
-  background: var(--accent);
+  background: var(--accent-fill);
   content: "";
 }
 

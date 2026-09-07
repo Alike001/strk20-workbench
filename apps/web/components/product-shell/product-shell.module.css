@@ -68,7 +68,7 @@
   bottom: -1px;
   left: 0;
   height: 2px;
-  background: var(--accent);
+  background: var(--accent-fill);
   content: "";
 }
 
@@ -117,7 +117,7 @@
   width: 0.45rem;
   height: 0.45rem;
   border-radius: 50%;
-  background: var(--accent);
+  background: var(--accent-fill);
 }
 
 .introduction {
@@ -176,7 +176,7 @@
 
 .primaryAction {
   border: 1px solid var(--accent);
-  background: var(--accent);
+  background: var(--accent-fill);
   color: var(--accent-ink);
 }
 
@@ -191,7 +191,7 @@
 }
 
 .primaryAction:hover {
-  background: var(--accent-strong);
+  background: var(--accent-fill);
 }
 
 .secondaryAction:hover {
@@ -1149,7 +1149,7 @@
 }
 
 .activeLink::after {
-  background: var(--accent);
+  background: var(--accent-fill);
 }
 
 .headerAction {
@@ -1160,7 +1160,7 @@
   border: 1px solid var(--accent);
   border-radius: var(--radius-small);
   padding: 0.7rem 1.15rem;
-  background: var(--accent);
+  background: var(--accent-fill);
   color: #fff;
   font-size: 0.88rem;
   font-weight: 700;
@@ -1231,7 +1231,7 @@
 }
 
 .primaryAction {
-  background: var(--accent);
+  background: var(--accent-fill);
   color: #fff;
 }
 
@@ -1326,7 +1326,7 @@
 
 .previewActions button[aria-pressed="true"] {
   border-color: var(--accent);
-  background: var(--accent);
+  background: var(--accent-fill);
 }
 
 .previewDirection {

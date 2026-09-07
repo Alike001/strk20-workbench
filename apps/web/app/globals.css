@@ -10,14 +10,15 @@
   --border: #262626;
   --border-strong: #3a3a3a;
   --muted: rgb(250 250 250 / 65%);
-  --muted-soft: #777;
-  --accent: #c53400;
-  --accent-strong: #c53400;
+  --muted-soft: #888;
+  --accent: #f15a24;
+  --accent-strong: #f15a24;
+  --accent-fill: #c53400;
   --accent-dark: #a02a00;
   --accent-ink: #fff;
-  --warning: #c53400;
-  --danger: #c53400;
-  --success: #c53400;
+  --warning: #f15a24;
+  --danger: #f15a24;
+  --success: #f15a24;
   --radius-small: 0.125rem;
   --radius-medium: 0.35rem;
   --radius-large: 0.65rem;
@@ -67,7 +68,7 @@ a {
 }
 
 ::selection {
-  background: var(--accent);
+  background: var(--accent-fill);
   color: #1a0a04;
 }
 

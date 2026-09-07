@@ -3,6 +3,7 @@ node_modules/
 
 # Next.js and build output
 .next/
+next-env.d.ts
 out/
 dist/
 coverage/

@@ -66,7 +66,7 @@ All committed dependencies use an exact lockfile. Critical Starknet-facing depen
 
 | Dependency        | Starting pin/policy                                        | Purpose                                                                |
 | ----------------- | ---------------------------------------------------------- | ---------------------------------------------------------------------- |
-| Next.js           | 16.2.9 candidate; verify against starter before final lock | Hosted workbench, documentation routes, safe server routes             |
+| Next.js           | 16.3.4 verified; explicit Webpack build path               | Hosted workbench, documentation routes, safe server routes             |
 | React / React DOM | compatible exact React 19 release selected by the lockfile | Interactive product surface                                            |
 | Tailwind CSS      | exact current release selected at scaffold time            | Design tokens and responsive layout                                    |
 | Zustand           | 5.0.12 candidate                                           | Lightweight workbench state and versioned sandbox persistence          |

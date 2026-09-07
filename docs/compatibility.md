@@ -1,6 +1,6 @@
 # Compatibility
 
-The machine-readable matrix lives in [`config/compatibility.json`](../config/compatibility.json). The package set and Ready X capability path are browser-verified, but the overall status remains `candidate` until a minimal prepare/invoke flow is proven on mainnet.
+The machine-readable matrix lives in [`config/compatibility.json`](../config/compatibility.json). The package set and Ready X `5.33.9` Wallet API path are verified through successful Shield, Private transfer, and Withdraw actions on Starknet Mainnet.
 
 ## Confirmed direction
 
@@ -10,7 +10,7 @@ The machine-readable matrix lives in [`config/compatibility.json`](../config/com
 - No private keys, viewing keys, discovery requests, or proving requests handled by the hosted application.
 - Privacy SDK examples are reference material only unless the product later adds a clearly separate key-holding operator mode.
 
-## Candidate package set
+## Supported package set
 
 | Package                                     | Exact pin |
 | ------------------------------------------- | --------- |
@@ -19,17 +19,19 @@ The machine-readable matrix lives in [`config/compatibility.json`](../config/com
 | `@starknet-io/get-starknet-wallet-standard` | `6.0.2`   |
 | `@starknet-io/types-js`                     | `0.10.3`  |
 
+The hosted frontend uses Next.js `16.3.4`, React `19.2.8`, and the explicit Webpack build path. Next.js `16.3.4` was selected during the release preflight because its direct Sharp and PostCSS versions contain the current security fixes; `pnpm audit` reports no known vulnerabilities for the locked workspace.
+
 Why this set: Starknet.js 10.4.0 is the starter baseline where `WalletAccountV6` first appears. Version 10.5.0 uses the same wallet-standard 6.0.2 and Wallet API 0.10.3 generation, matches the inspected STRK20 privacy repository snapshot, and avoids the prerelease Wallet API types pulled by Starknet.js 10.7.1.
 
-## Reproducible checks on 2026-09-04
+## Reproducible checks through 2026-09-06
 
-| Matrix                                                                                             | Result       | Notes                                                                                                                                                            |
-| -------------------------------------------------------------------------------------------------- | ------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Upstream starter: Starknet.js `10.4.0`, discovery `6.0.2`, wallet standard `6.0.2`, types `0.10.3` | Pass         | Clean dependency install and Next.js Webpack production build passed. The starter's ranged Next.js dependency resolved to `16.3.4` during this disposable check. |
-| Workbench candidate: same set with Starknet.js `10.5.0`                                            | Pass         | The same starter compiled, typechecked, prerendered, and completed a production build after the one-version substitution.                                        |
-| Workbench lockfile and app                                                                         | Pass         | Exact-pinned install, lint, typecheck, automated tests, and Next.js 16.2.9 Webpack production build pass.                                                        |
-| Browser discovery without an extension                                                             | Pass         | The page renders, scans only after a click, remains empty when no wallet is installed, and makes no RPC/private method request.                                  |
-| Real wallet extension                                                                              | Partial pass | Ready X connected on Starknet Mainnet and advertised Wallet API `0.10.3` on 2026-09-05. Extension version and minimal prepare/invoke evidence remain pending.    |
+| Matrix                                                                                             | Result | Notes                                                                                                                                                            |
+| -------------------------------------------------------------------------------------------------- | ------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Upstream starter: Starknet.js `10.4.0`, discovery `6.0.2`, wallet standard `6.0.2`, types `0.10.3` | Pass   | Clean dependency install and Next.js Webpack production build passed. The starter's ranged Next.js dependency resolved to `16.3.4` during this disposable check. |
+| Workbench candidate: same set with Starknet.js `10.5.0`                                            | Pass   | The same starter compiled, typechecked, prerendered, and completed a production build after the one-version substitution.                                        |
+| Workbench lockfile and app                                                                         | Pass   | Exact-pinned install, lint, typecheck, automated tests, audit, and Next.js 16.3.4 Webpack production build pass.                                                 |
+| Browser discovery without an extension                                                             | Pass   | The page renders, scans only after a click, remains empty when no wallet is installed, and makes no RPC/private method request.                                  |
+| Real wallet extension                                                                              | Pass   | Ready X `5.33.9` completed Shield, Private transfer, and Withdraw through Wallet API `0.10.3` on Starknet Mainnet on 2026-09-06.                                 |
 
 Source snapshots inspected:
 
@@ -43,9 +45,9 @@ The hidden probe discovers wallet-standard providers only after **Scan installed
 
 It does **not** call `wallet_strk20Balances`, `wallet_strk20PrepareInvoke`, or `wallet_strk20InvokeTransaction`. A result saying **Available by contract** means two narrower things: the corresponding Starknet.js method exists, and the wallet advertises Wallet API 0.10.3 or newer. It does not claim that proving or mainnet submission succeeded.
 
-## Human-browser result on 2026-09-05
+## Human-browser result on 2026-09-06
 
-Ready X was selected in the hosted Workbench, approved account access, reported Starknet Mainnet, advertised Wallet API `0.10.3`, and exposed the required STRK20 methods. The configured official pool and receipt-verifier checks also passed. This proves discovery and capability compatibility without reading a private balance or starting a transaction; it does not yet prove successful preparation, proving, or submission.
+Ready X `5.33.9` was selected in the hosted Workbench, approved account access, reported Starknet Mainnet, advertised Wallet API `0.10.3`, and exposed the required STRK20 methods. After a wallet-owned first shield registered the account, the reviewed Workbench flow successfully shielded, privately transferred, and withdrew STRK. Each curated transaction receipt succeeded and emitted an event from the configured official pool. The public receipt does not expose or independently prove the private transfer's recipient or amount; those remain wallet-reviewed private-action context.
 
 ## STRK20 wire encoding finding on 2026-09-06
 
@@ -59,17 +61,17 @@ The mainnet receipt `0x04816dbb3ec04d21cc5da879358e485afdbfe52a3d8f6b8bf4a678003
 
 A subsequent Ready X `5.33.9` review exposed the shield fee presentation precisely: a requested 1 STRK deposit displayed `-1.0 STRK`, `+0.0 [STRK]`, and `6.0 STRK reserved from your balance for the privacy fee`. The user rejected before submission, so no funds moved and no transaction hash exists. Workbench now models shield input as the gross public deposit, subtracts the live pool fee to preview the expected private increase, and prevents review while the deposit is less than or equal to that fee. Transfer and withdrawal previews continue to add the fee to the private balance requirement.
 
-## Compatibility gate partially complete
+## Compatibility gate complete
 
-Before real-mode UI is treated as fully supported, the team must still record:
+The supported path records:
 
-1. the Ready X extension version (the product now displays it after connection);
-2. a wallet-owned first shield followed by a minimal Workbench invoke result on Starknet Mainnet;
-3. the resulting transaction hash and verified pool interaction.
+1. Ready X extension version `5.33.9`;
+2. Wallet API `0.10.3` on Starknet Mainnet;
+3. wallet-owned first-use registration by shielding;
+4. successful Workbench Shield, Private transfer, and Withdraw actions;
+5. independent receipt and official-pool verification for all three curated hashes.
 
-Already recorded: Ready X, Wallet API `0.10.3`, exact application package pins, successful capability detection without reading private balances, and the current wallet/pool/receipt-verifier boundary.
-
-The sandbox does not depend on this gate and must remain usable if real mode is unavailable.
+Other wallets remain capability-detected rather than assumed compatible. The Sandbox remains usable if the supported wallet path or public receipt verification is unavailable.
 
 ## Four questions for the STRK20 team
 

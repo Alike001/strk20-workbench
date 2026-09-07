@@ -45,7 +45,7 @@
   width: 0.8rem;
   height: 0.8rem;
   margin-top: 0.3rem;
-  background: var(--accent);
+  background: var(--accent-fill);
   box-shadow: 0 0 0 0.3rem rgb(197 52 0 / 12%);
 }
 
@@ -173,7 +173,7 @@
   width: 0.55rem;
   height: 0.55rem;
   flex: 0 0 auto;
-  background: var(--accent);
+  background: var(--accent-fill);
   box-shadow: 0 0 0 0.2rem rgb(197 52 0 / 10%);
 }
 

@@ -133,3 +133,15 @@
 - Teammate PR #18 added the submission readiness panel. Review made transaction counts fail closed and restricted rendered external links to HTTPS before merge.
 - The integrated codebase passes 180 unit/component tests, 96.54% Lab Core statement coverage, production builds for both apps, and five Playwright journeys including the responsive repository-evidence page.
 - No local RPC credential is configured. Real evidence remains correctly unverified until a server-only mainnet RPC URL is added to the host and the team performs the supported-wallet mainnet smoke.
+
+## 2026-09-06 — Verified mainnet lifecycle and release preflight
+
+- Ready X `5.33.9` completed the Workbench Shield, Private transfer, and Withdraw flow through Wallet API `0.10.3` on Starknet Mainnet. First-use registration remained wallet-owned, and Workbench never requested a private key, seed phrase, viewing key, note contents, or proof payload.
+- The curated evidence set contains exactly three hashes: shield `0x039372b04a863fd5cd016f2715034dc6286b7c61f63abe96199ddf65b35da6c0`, private transfer `0x04fbfb9204259a2c26aa4c5550f6bfd3acd67c4821ab23a7c50c537338093b20`, and withdraw `0x0029a150756c3184bb1818cc0b471277dd6cd19a860d5d4069cfcaea4418a597`.
+- The deployed Evidence API and the official sprint hub independently report all three receipts successful and all three official-pool interactions verified. The project has no custom deployed contract, so pool verification is the applicable sprint rule.
+- The wallet omitted a hash from some calls even after successful submission. The recovery UI now accepts the hash copied from Ready X, performs read-only receipt verification, never resubmits, and has an exact browser regression test.
+- A pre-demo dependency audit found current advisories in Next.js `16.2.9` and its Sharp/PostCSS tree. The frontend and matching ESLint configuration were upgraded to Next.js `16.3.4`; its locked Sharp `0.35.4` and PostCSS `8.5.23` resolve the findings, and `pnpm audit` reports no known vulnerabilities.
+- The release-quality gate now includes a static production CSP, clickjacking/MIME/referrer/permissions headers, separate development-only `unsafe-eval` support required by the Next.js debug runtime, and a regression test for those production headers. The production smoke confirmed no `X-Powered-By` disclosure.
+- Automated accessibility coverage now scans the Introduction, Workbench, Components, Documentation, and Evidence routes for serious or critical WCAG A/AA violations. Small orange and gray labels were adjusted to accessible text colors while the darker brand orange remains reserved for button and indicator fills.
+- The final local release candidate passes 207 unit/component tests, 96.54% statement and 93.25% branch coverage, all 12 Playwright journeys, lint, typecheck, formatting, structural submission validation, the full workspace production build, and `pnpm audit --audit-level high`.
+- The remaining scoring requirement is the public three-minute demo video. No further mainnet transaction is required.
